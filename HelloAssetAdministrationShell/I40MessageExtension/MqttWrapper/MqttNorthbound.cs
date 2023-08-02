@@ -1,51 +1,71 @@
 ﻿using MQTTnet;
 using MQTTnet.Client;
-
+using MQTTnet.Protocol;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
-using MQTTnet.Protocol;
 
-namespace I40Extension.UtilsMqtt
+namespace HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper
 {
-    public class MqttClientWrapper : IDisposable
+    public class MqttNorthbound 
     {
 
-        private readonly IMqttClient _mqttClient;
+        private  IMqttClient _mqttClient;
+
+        private  MqttClientOptions _options;
 
         public event EventHandler<MqttApplicationMessageReceivedEventArgs> MessageReceived;
+        public List<string> mymesseges;
 
- 
-        public MqttClientWrapper(string brokerIpAddress, int brokerPort)
+        [Obsolete]
+        public MqttNorthbound(string brokerIpAddress, int brokerPort, string clientId)
         {
-            var factory = new MqttFactory();
-            _mqttClient = factory.CreateMqttClient();
-
-            var options = new MqttClientOptionsBuilder()
+           
+            _options = new MqttClientOptionsBuilder()
             .WithTcpServer(brokerIpAddress, brokerPort)
-            .WithCleanSession()
+            .WithClientId(clientId)
             .Build();
 
-           
             _mqttClient = new MqttFactory().CreateMqttClient();
             _mqttClient.ApplicationMessageReceivedAsync += HandleReceivedMessages;
-
-            _mqttClient.ConnectAsync(options);
+            ConnectAsync(_options).Wait();
 
         }
 
-        
+        private async Task ConnectAsync(MqttClientOptions _options)
+        {
+            try
+            {
+                await _mqttClient.ConnectAsync(_options);
+            }
+            catch (Exception ex)
+            {
+                // Handle connection error
+                Console.WriteLine($"Error connecting to MQTT broker: {ex.Message}");
+            }
+        }
+
+        public async Task SubscribeAsync(string topic)
+        {
+           
+            
+                await _mqttClient.SubscribeAsync(topic);
+         
+
+        }
+
+        [Obsolete]
         private async Task HandleReceivedMessages(MqttApplicationMessageReceivedEventArgs eventArgs)
         {
             string topic = eventArgs.ApplicationMessage.Topic;
             string message = Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload);
 
             MessageReceived?.Invoke(this, eventArgs);
-
+          //  mymesseges.Add(message);
             Console.WriteLine($"Received message on topic: {topic}");
             Console.WriteLine($"Message: {message}");
 
@@ -53,8 +73,6 @@ namespace I40Extension.UtilsMqtt
 
             await Task.CompletedTask;
         }
-
-
         public async Task PublishAsync<I40Message>(string topic, I40Message payload)
         {
             var jsonPayload = JsonConvert.SerializeObject(payload);
@@ -65,17 +83,19 @@ namespace I40Extension.UtilsMqtt
                 .Build();
 
             await _mqttClient.PublishAsync(message);
-        }
+            Console.WriteLine(message);
 
-        public void Subscribe(string topic)
-        {
-            _mqttClient.SubscribeAsync(topic).Wait();
         }
-        
+        public List<string> getMessages()
+        {
+            return mymesseges;
+        }
         public void Dispose()
         {
             _mqttClient.DisconnectAsync().Wait();
             _mqttClient.Dispose();
         }
     }
+
 }
+

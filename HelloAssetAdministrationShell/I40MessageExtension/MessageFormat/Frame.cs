@@ -1,13 +1,11 @@
-﻿using I40Extension.Message;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace I40Extension
+namespace HelloAssetAdministrationShell.I40MessageExtension.MessageFormat
 {
-   public class Frame
+    public class Frame
     {
         public SemanticProtocol semanticProtocol { get; set; }
         public string type { get; set; }
@@ -18,6 +16,4 @@ namespace I40Extension
         public string inReplyTO { get; set; }
         public string conversationId { get; set; }
     }
-
-
 }

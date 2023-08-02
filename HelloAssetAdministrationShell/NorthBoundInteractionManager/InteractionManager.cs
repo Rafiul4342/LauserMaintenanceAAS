@@ -1,9 +1,10 @@
-﻿using System;
+﻿using BaSyx.AAS.Client.Http;
+using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using I40Extension.UtilsMqtt;
-using I40Extension.Message;
+
 
 
 
@@ -13,27 +14,12 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
     {
         private readonly AssetAdministrationShellHttpClient client;
 
-        
 
-
-        public async task<SubmodelElementCollection> GetInteractionElement(Uri uri, string SubmodelIdShort, string SubmodelElementidShort)
+        public AssetAdministrationShellHttpClient Setclient(string url)
         {
-            try
-            {
-                AssetAdministrationShellHttpClient client = new AssetAdmistationShellClient(new Uri("http://localhost:5180"));
+            AssetAdministrationShellHttpClient cl = new AssetAdministrationShellHttpClient(new Uri(url));
 
-                interactionElements e = new interactionElements();
-
-              await e = client.RetrieveSubmodelElement(SubmodelIdShort, SubmodelElementidShort);
-                return e;
-            }
-            catch
-            {
-
-                ILogger.log("Cannot connect to aas");
-            }
-           
+            return cl;
         }
-
     }
 }

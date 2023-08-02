@@ -2,18 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-
-
-
-namespace I40Extension
+namespace HelloAssetAdministrationShell.I40MessageExtension.MessageFormat
 {
     public class I40Message
     {
         public Frame frame { get; set; }
- 
+
         public List<SubmodelElementCollection> interactionElements { get; set; }
 
         public void SetInteractionElement(List<SubmodelElementCollection> interactionElements)
@@ -23,7 +19,7 @@ namespace I40Extension
 
         public List<SubmodelElementCollection> GetInteracrionElement()
         {
-            return interactionElements; 
+            return interactionElements;
         }
 
         public void Setframe(Frame frame)
@@ -36,8 +32,5 @@ namespace I40Extension
             return this.frame;
         }
 
-     
     }
-
-    
 }

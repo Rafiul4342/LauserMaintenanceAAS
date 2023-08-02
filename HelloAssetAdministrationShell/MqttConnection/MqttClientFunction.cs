@@ -189,10 +189,6 @@ namespace HelloAssetAdministrationShell.MqttConnection
         //http://172.25.48.1:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_1/MaintenanceDetails/OperatingHours/value
 
         //after your loop
-
-
-
-
     }
 }
 

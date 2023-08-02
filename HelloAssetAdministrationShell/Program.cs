@@ -21,6 +21,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Web;
+using HelloAssetAdministrationShell.I40MessageExtension;
+using System.Threading.Tasks;
+using System.Text;
+using System;
+using MQTTnet.Client;
 
 namespace HelloAssetAdministrationShell
 {
@@ -29,11 +34,14 @@ namespace HelloAssetAdministrationShell
         //Create logger for the application
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        static void Main(string[] args)
+        public static object I40MessageExtension { get; private set; }
+
+       
+
+        [System.Obsolete]
+       public static async Task Main(string[] args)
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
-
-            
 
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = ServerSettings.LoadSettingsFromFile("ServerSettings.xml");
@@ -44,7 +52,7 @@ namespace HelloAssetAdministrationShell
             //Configure the entire application to use your own logger library (here: Nlog)
             server.WebHostBuilder.UseNLog();
 
-            server.WebHostBuilder.ConfigureServices(Services => { Services.Singlton<GetDataService>(); });
+           // server.WebHostBuilder.ConfigureServices(Services => { Services.AddSinglton<GetDataService>(); });
             // additional service Registration
             
 
@@ -67,7 +75,15 @@ namespace HelloAssetAdministrationShell
             //Add BaSyx Web UI
             server.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
             server.AddBaSyxUI("DashBoard");
+            string ClinetID = "test01";
+
             MqttClientFunction cl = new MqttClientFunction();
+
+            HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper.MqttNorthbound mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org",1883, ClinetID );
+
+
+           await mqttclient.SubscribeAsync("rafiul");
+            mqttclient.MessageReceived += OnMessage;
 
             //Action that gets executued when server is fully started 
             server.ApplicationStarted = () =>
@@ -85,6 +101,15 @@ namespace HelloAssetAdministrationShell
 
             //Run HTTP server
             server.Run();
+        }
+
+        [Obsolete]
+        private static void OnMessage(object sender, MqttApplicationMessageReceivedEventArgs e)
+        {
+            var topic = e.ApplicationMessage.Topic;
+            var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            // Implement your logic here to handle the received message
+            Console.WriteLine($"Received message on topic '{topic}': {payload}");
         }
     }
 }

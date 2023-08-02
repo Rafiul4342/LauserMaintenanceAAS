@@ -17,6 +17,7 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="M2Mqtt" Version="4.3.0" />
+    <PackageReference Include="MQTTnet" Version="4.2.1.781" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.14.0" />
   </ItemGroup>
 
@@ -45,15 +46,6 @@
  
   <ItemGroup>
     <Folder Include="data\" />
-  </ItemGroup>
- 
-  <ItemGroup>
-    <None Include="I40Language\I40Extension.csproj" />
-    <None Include="I40Language\I40Extension.sln" />
-  </ItemGroup>
- 
-  <ItemGroup>
-    <ProjectReference Include="C:\Users\tofu\Source\Repos\I40Extension\I40Extension.csproj" />
   </ItemGroup>
 
 </Project>

@@ -438,6 +438,7 @@ namespace HelloAssetAdministrationShell
                         (aas.Asset as Asset).AssetIdentificationModel = new Reference<ISubmodel>(assetIdentificationSubmodel);
 
                         aas.Submodels.Add(assetIdentificationSubmodel);*/
+            
             aas.Submodels.Add(maintenanceSubmodel);
             return aas;
         }
