@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using System.Text;
 using System;
 using MQTTnet.Client;
+using System.Threading;
 
 namespace HelloAssetAdministrationShell
 {
@@ -36,14 +37,9 @@ namespace HelloAssetAdministrationShell
 
         public static object I40MessageExtension { get; private set; }
 
-       
-
-        [System.Obsolete]
-       public static async Task Main(string[] args)
+        [Obsolete]
+        private static async Task InitializeAsync()
         {
-            logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
-
-            //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = ServerSettings.LoadSettingsFromFile("ServerSettings.xml");
 
             //Initialize generic HTTP-REST interface passing previously loaded server configuration
@@ -52,20 +48,20 @@ namespace HelloAssetAdministrationShell
             //Configure the entire application to use your own logger library (here: Nlog)
             server.WebHostBuilder.UseNLog();
 
-           // server.WebHostBuilder.ConfigureServices(Services => { Services.AddSinglton<GetDataService>(); });
+            // server.WebHostBuilder.ConfigureServices(Services => { Services.AddSinglton<GetDataService>(); });
             // additional service Registration
-            
+
 
 
             //Instantiate Asset Administration Shell Service
             HelloAssetAdministrationShellService shellService = new HelloAssetAdministrationShellService();
 
-       //     server.WebHostBuilder.ConfigureServices(services => { services.AddHostedService<GetDataService>(); });
+            //    server.WebHostBuilder.ConfigureServices(services => { services.AddHostedService<GetDataService>(); });
             //Dictate Asset Administration Shell service to use provided endpoints from the server configuration
             shellService.UseAutoEndpointRegistration(serverSettings.ServerConfig);
             //  WebHostBuilder webHostBuilder = new WebHostBuilder();
-          
-          
+
+
             //Assign Asset Administration Shell Service to the generic HTTP-REST interface
             server.SetServiceProvider(shellService);
 
@@ -79,11 +75,12 @@ namespace HelloAssetAdministrationShell
 
             MqttClientFunction cl = new MqttClientFunction();
 
-            HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper.MqttNorthbound mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org",1883, ClinetID );
+            HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper.MqttNorthbound mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org", 1883, ClinetID);
 
 
-           await mqttclient.SubscribeAsync("rafiul");
+            await mqttclient.SubscribeAsync("rafiul");
             mqttclient.MessageReceived += OnMessage;
+
 
             //Action that gets executued when server is fully started 
             server.ApplicationStarted = () =>
@@ -92,6 +89,8 @@ namespace HelloAssetAdministrationShell
                 shellService.StartDiscovery();
             };
 
+
+
             //Action that gets executed when server is shutting down
             server.ApplicationStopping = () =>
             {
@@ -99,8 +98,33 @@ namespace HelloAssetAdministrationShell
                 shellService.StopDiscovery();
             };
 
-            //Run HTTP server
+
             server.Run();
+        }
+
+        [System.Obsolete]
+       public static async Task Main(string[] args)
+        {
+            logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
+            string url = "http://localhost:5180";
+            Console.WriteLine("this is a new program");
+
+
+           
+            Console.WriteLine("this is a new program");
+            await InitializeAsync();
+
+            Task interactionManager = Task.Run(async() => {
+
+                NorthBoundInteractionManager.InteractionManager manager = new NorthBoundInteractionManager.InteractionManager();
+                await manager.Manager(url);
+                var val = manager.GetSubmodel();
+
+            });
+
+
+
+
         }
 
         [Obsolete]
