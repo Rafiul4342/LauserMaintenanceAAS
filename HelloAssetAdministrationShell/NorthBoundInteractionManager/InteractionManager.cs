@@ -29,45 +29,52 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 if (resoponse.IsSuccessStatusCode)
                 {
                     AssetAdministrationShellHttpClient _client = new AssetAdministrationShellHttpClient(new Uri(Url));
+                 
                 }
                 else
                 {
                     System.Threading.Thread.Sleep(1000);
                    await Manager(url);
+                   
                 }
             }
             catch 
             {
                 System.Threading.Thread.Sleep(1000);
                 await Manager(url);
+             
             }
 
         }
 
-        
-        public AssetAdministrationShellHttpClient getClient()
+    public AssetAdministrationShellHttpClient getClient()
         {
             return _client;
-        }
-    
-        public Submodel GetSubmodel()
+        } 
+        public async Task<Submodel> GetSubmodels()
         {
             if (_client == null)
             {
-                AssetAdministrationShellHttpClient _clinet = new AssetAdministrationShellHttpClient(new Uri(Url));
-                var submodels = _client.RetrieveSubmodels();
-                var v = submodels.Entity.Value.IdShort;
-             
-                Console.WriteLine(submodels.Entity.Count);
-                
-                return (Submodel)submodels;
+                 await Manager(Url);
+                 
+                var cl = getClient();
+                if(cl != null)
+                {
+                   var result = cl.RetrieveSubmodels();
+                    Console.WriteLine(result.Entity.Count());
+                    return (Submodel)result;
+                }
+                else
+                {
+                    return null;
+                }
+            
                 
             }
             else
             {
-                var submodels = _client.RetrieveSubmodels();
-                Console.WriteLine(submodels.Entity.Count);
-                return (Submodel)submodels;
+              
+                return null;
             }
         }
 

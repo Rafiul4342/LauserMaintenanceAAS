@@ -110,17 +110,48 @@ namespace HelloAssetAdministrationShell
             Console.WriteLine("this is a new program");
 
 
-           
-            Console.WriteLine("this is a new program");
-            await InitializeAsync();
-
-            Task interactionManager = Task.Run(async() => {
+            Task interactionManager = Task.Run(async () => {
 
                 NorthBoundInteractionManager.InteractionManager manager = new NorthBoundInteractionManager.InteractionManager();
                 await manager.Manager(url);
-                var val = manager.GetSubmodel();
+
+
+                var cl = manager.getClient();
+              
+               
+
+                /* try
+                 {
+                     BaSyx.Models.Core.AssetAdministrationShell.Implementations.Submodel val = await manager.GetSubmodels();
+                     if(val != null)
+                     {
+                         Console.WriteLine(val.IdShort);
+                     }
+                     else
+                     {
+                         System.Threading.Thread.Sleep(1000);
+                         await manager.Manager(url);
+                         var vale =await manager.GetSubmodels();
+                         Console.WriteLine(vale.ToString());
+
+                     }
+                 }
+                 catch
+                 {
+                     System.Threading.Thread.Sleep(1000);
+                     await manager.Manager(url);
+                     var vale = await manager.GetSubmodels();
+                     Console.WriteLine(vale.ToString());
+
+                 }
+                */
 
             });
+               
+            Console.WriteLine("this is a new program");
+            await InitializeAsync();
+
+          
 
 
 
