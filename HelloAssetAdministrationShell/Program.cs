@@ -27,6 +27,8 @@ using System.Text;
 using System;
 using MQTTnet.Client;
 using System.Threading;
+using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
+using Newtonsoft.Json;
 
 namespace HelloAssetAdministrationShell
 {
@@ -98,12 +100,13 @@ namespace HelloAssetAdministrationShell
                 shellService.StopDiscovery();
             };
 
+            await server.RunAsync();
 
-            server.Run();
+
         }
 
         [System.Obsolete]
-       public static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
             string url = "http://localhost:5180";
@@ -114,46 +117,61 @@ namespace HelloAssetAdministrationShell
 
                 NorthBoundInteractionManager.InteractionManager manager = new NorthBoundInteractionManager.InteractionManager();
                 await manager.Manager(url);
+                var client = manager.getClient();
+                try
+                {
 
+                    var sub = client.RetrieveSubmodels();
+                    var result = sub.Entity.Values;
+                    if(sub.Entity.IdShort == "MaintenceSubmodel")
+                    {
+                        Console.WriteLine("Submodel Retreived");
+                    }                  
+                //  Submodel Maintence = JsonConvert.DeserializeObject<Submodel>(result);
+                    Console.WriteLine(result);
+                    Console.WriteLine(result.GetType());
+                }
+                catch (Exception)
+                {
 
-                var cl = manager.getClient();
-              
-               
+                    throw;
+                }
 
-                /* try
-                 {
-                     BaSyx.Models.Core.AssetAdministrationShell.Implementations.Submodel val = await manager.GetSubmodels();
-                     if(val != null)
-                     {
-                         Console.WriteLine(val.IdShort);
-                     }
-                     else
-                     {
-                         System.Threading.Thread.Sleep(1000);
-                         await manager.Manager(url);
-                         var vale =await manager.GetSubmodels();
-                         Console.WriteLine(vale.ToString());
+                //  var cl = manager.getClient();
 
-                     }
-                 }
-                 catch
-                 {
-                     System.Threading.Thread.Sleep(1000);
-                     await manager.Manager(url);
-                     var vale = await manager.GetSubmodels();
-                     Console.WriteLine(vale.ToString());
+                /*
+                      try
+                         {
+                             BaSyx.Models.Core.AssetAdministrationShell.Implementations.Submodel val = await manager.GetSubmodels();
+                             if(val != null)
+                             {
+                                 Console.WriteLine(val.IdShort);
+                             }
+                             else
+                             {
+                                 System.Threading.Thread.Sleep(1000);
+                                 await manager.Manager(url);
+                                 var vale =await manager.GetSubmodels();
+                                 Console.WriteLine(vale.ToString());
 
-                 }
-                */
+                             }
+                         }
+                         catch
+                         {
+                             System.Threading.Thread.Sleep(1000);
+                             await manager.Manager(url);
+                             var vale = await manager.GetSubmodels();
+                             Console.WriteLine(vale.ToString());
+                         }
+                               */
 
             });
-               
-            Console.WriteLine("this is a new program");
+           
             await InitializeAsync();
+            await interactionManager;
+            // Await the interactionManager task before exiting the application
 
-          
-
-
+            Console.WriteLine("this is a new program");
 
 
         }

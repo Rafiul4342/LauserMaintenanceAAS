@@ -13,74 +13,119 @@ using System.Threading.Tasks;
 
 namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 {
+    /* public class InteractionManager
+     {
+         public AssetAdministrationShellHttpClient _client;
+         public string Url;
+
+
+         public async Task Manager(string url)
+         {
+             try
+             {
+                 this.Url = url;
+                 HttpClient cl = new HttpClient();
+                 var resoponse = await cl.GetAsync(Url);
+                 if (resoponse.IsSuccessStatusCode)
+                 {
+                    AssetAdministrationShellHttpClient _client = new AssetAdministrationShellHttpClient(new Uri(Url));
+
+                 }
+                 else
+                 {
+                     System.Threading.Thread.Sleep(1000);
+                    await Manager(url);
+
+                 }
+             }
+             catch 
+             {
+                 System.Threading.Thread.Sleep(1000);
+                 await Manager(url);
+             }
+
+         }
+
+     public AssetAdministrationShellHttpClient getClient()
+         {
+             return _client;
+         } 
+         public async Task<Submodel> GetSubmodels()
+         {
+             if (_client == null)
+             {
+                 await Manager(Url);
+                 var result = _client.RetrieveSubmodels();
+                 Console.WriteLine(result.ToString());
+               //  var cl = getClient();
+                 if(_client!= null)
+                 {
+                    var result1 = _client.RetrieveSubmodels();
+                     Console.WriteLine(result.Entity.Count());
+                     return (Submodel)result;
+                 }
+                 else
+                 {
+                     return null;
+                 }
+
+
+             }
+             else
+             {
+
+                 return null;
+             }
+         }
+
+
+
+
+
+     }
+ }
+ */
+
     public class InteractionManager
     {
-        public AssetAdministrationShellHttpClient _client;
+        public AssetAdministrationShellHttpClient _client { get; set; }
         public string Url;
-
-
         public async Task Manager(string url)
         {
             try
             {
-                this.Url = url;
+        
                 HttpClient cl = new HttpClient();
-                var resoponse = await cl.GetAsync(Url);
-                if (resoponse.IsSuccessStatusCode)
+                var response = await cl.GetAsync(url);
+                if (response.IsSuccessStatusCode)
                 {
-                    AssetAdministrationShellHttpClient _client = new AssetAdministrationShellHttpClient(new Uri(Url));
-                 
+                   this._client = new AssetAdministrationShellHttpClient(new Uri(url));
                 }
                 else
                 {
-                    System.Threading.Thread.Sleep(1000);
-                   await Manager(url);
-                   
+                    await Task.Delay(1000); // Use Task.Delay instead of Thread.Sleep
+                    await Manager(url);
                 }
             }
-            catch 
+            catch
             {
-                System.Threading.Thread.Sleep(1000);
+                await Task.Delay(1000);
                 await Manager(url);
-             
             }
-
         }
 
-    public AssetAdministrationShellHttpClient getClient()
+        public AssetAdministrationShellHttpClient getClient()
         {
             return _client;
-        } 
-        public async Task<Submodel> GetSubmodels()
-        {
-            if (_client == null)
-            {
-                 await Manager(Url);
-                 
-                var cl = getClient();
-                if(cl != null)
-                {
-                   var result = cl.RetrieveSubmodels();
-                    Console.WriteLine(result.Entity.Count());
-                    return (Submodel)result;
-                }
-                else
-                {
-                    return null;
-                }
-            
-                
-            }
-            else
-            {
-              
-                return null;
-            }
         }
 
+    /*    public Task<Submodel> GetSubmodels()
+        {
+            Submodel sub = (Submodel)_client.RetrieveSubmodels();
 
-      
+            return sub;
+            
 
-
+        }*/
     }
 }
