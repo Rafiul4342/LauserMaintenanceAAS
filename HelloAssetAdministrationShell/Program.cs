@@ -29,6 +29,11 @@ using MQTTnet.Client;
 using System.Threading;
 using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using Newtonsoft.Json;
+using BaSyx.Models.Core.AssetAdministrationShell.Generics;
+using System.Collections.Generic;
+using BaSyx.Models.Core.Common;
+using BaSyx.Models.Extensions;
+using System.Linq;
 
 namespace HelloAssetAdministrationShell
 {
@@ -111,7 +116,7 @@ namespace HelloAssetAdministrationShell
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
             string url = "http://localhost:5180";
             Console.WriteLine("this is a new program");
-
+            List<string>ListofMaintenanceInterval = new List<string>();
 
             Task interactionManager = Task.Run(async () => {
 
@@ -123,13 +128,45 @@ namespace HelloAssetAdministrationShell
 
                     var sub = client.RetrieveSubmodels();
                     var result = sub.Entity.Values;
-                    if(sub.Entity.IdShort == "MaintenceSubmodel")
+                    foreach(ISubmodel submodel in result)
                     {
-                        Console.WriteLine("Submodel Retreived");
-                    }                  
-                //  Submodel Maintence = JsonConvert.DeserializeObject<Submodel>(result);
-                    Console.WriteLine(result);
-                    Console.WriteLine(result.GetType());
+                        if(submodel.IdShort == "MaintenanceSubmodel")
+                        {
+                           var submodelElementsValues =submodel.SubmodelElements.Values;
+                           // ISubmodelElementCollection col = (ISubmodelElementCollection)submodelElementsValues.GetEnumerator();
+                            foreach(var s in submodelElementsValues)
+                            {
+                                Console.WriteLine(s.IdShort);
+                                ListofMaintenanceInterval.Add(s.IdShort);
+                                Console.WriteLine(s.GetType());
+                            }
+                           
+                            foreach(var a in ListofMaintenanceInterval)
+                            {
+                                var MaintenceDetatils = client.RetrieveSubmodelElement("MaintenanceSubmodel", a);
+                               var ResultJson = MaintenceDetatils.Entity.ToJson();
+
+                                SubmodelElementCollection submodelElementsCollection = JsonConvert.DeserializeObject<SubmodelElementCollection>(ResultJson);
+                                foreach(var element in submodelElementsCollection.Value)
+                                {
+
+                                    Console.WriteLine(element.IdShort);
+                                     SubmodelElementCollection submodelElementsCollection1 = JsonConvert.DeserializeObject<SubmodelElementCollection>(element.ToJson());
+                                    foreach(var data in submodelElementsCollection1.Value)
+                                    {
+                                        IValue val = data.GetValue();
+                                        Console.WriteLine(val.Value);
+                                    }
+
+                                }
+                               
+                               
+                            }
+                        }
+                    }
+                            
+              
+                 
                 }
                 catch (Exception)
                 {
@@ -174,6 +211,11 @@ namespace HelloAssetAdministrationShell
             Console.WriteLine("this is a new program");
 
 
+        }
+
+        private static void GetValue(object sender, ValueChangedArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         [Obsolete]
