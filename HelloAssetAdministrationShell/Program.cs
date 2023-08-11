@@ -154,8 +154,14 @@ namespace HelloAssetAdministrationShell
                                      SubmodelElementCollection submodelElementsCollection1 = JsonConvert.DeserializeObject<SubmodelElementCollection>(element.ToJson());
                                     foreach(var data in submodelElementsCollection1.Value)
                                     {
-                                        IValue val = data.GetValue();
-                                        Console.WriteLine(val.Value);
+
+                                        Console.WriteLine(data.IdShort);
+                                            IValue val = data.GetValue();
+
+                                            Console.WriteLine(val.Value);
+                                            
+                                      
+
                                     }
 
                                 }
