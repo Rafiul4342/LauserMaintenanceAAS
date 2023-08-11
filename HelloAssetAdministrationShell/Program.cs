@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using BaSyx.Models.Core.Common;
 using BaSyx.Models.Extensions;
 using System.Linq;
+using HelloAssetAdministrationShell.NorthBoundInteractionManager;
 
 namespace HelloAssetAdministrationShell
 {
@@ -117,96 +118,115 @@ namespace HelloAssetAdministrationShell
             string url = "http://localhost:5180";
             Console.WriteLine("this is a new program");
             List<string>ListofMaintenanceInterval = new List<string>();
-
+            Dictionary<String, int> MaintenanceConfiguration = new Dictionary<string, int>();
+       
             Task interactionManager = Task.Run(async () => {
 
-                NorthBoundInteractionManager.InteractionManager manager = new NorthBoundInteractionManager.InteractionManager();
-                await manager.Manager(url);
-                var client = manager.getClient();
-                try
+                Dictionary<string, int> maintenanceConfiguration = await MaintenceConfiguration.RetrieveMaintenanceConfiguration(url);
+
+                foreach (var kvp in maintenanceConfiguration)
                 {
-
-                    var sub = client.RetrieveSubmodels();
-                    var result = sub.Entity.Values;
-                    foreach(ISubmodel submodel in result)
-                    {
-                        if(submodel.IdShort == "MaintenanceSubmodel")
-                        {
-                           var submodelElementsValues =submodel.SubmodelElements.Values;
-                           // ISubmodelElementCollection col = (ISubmodelElementCollection)submodelElementsValues.GetEnumerator();
-                            foreach(var s in submodelElementsValues)
-                            {
-                                Console.WriteLine(s.IdShort);
-                                ListofMaintenanceInterval.Add(s.IdShort);
-                                Console.WriteLine(s.GetType());
-                            }
-                           
-                            foreach(var a in ListofMaintenanceInterval)
-                            {
-                                var MaintenceDetatils = client.RetrieveSubmodelElement("MaintenanceSubmodel", a);
-                               var ResultJson = MaintenceDetatils.Entity.ToJson();
-
-                                SubmodelElementCollection submodelElementsCollection = JsonConvert.DeserializeObject<SubmodelElementCollection>(ResultJson);
-                                foreach(var element in submodelElementsCollection.Value)
-                                {
-
-                                    Console.WriteLine(element.IdShort);
-                                     SubmodelElementCollection submodelElementsCollection1 = JsonConvert.DeserializeObject<SubmodelElementCollection>(element.ToJson());
-                                    foreach(var data in submodelElementsCollection1.Value)
-                                    {
-
-                                        Console.WriteLine(data.IdShort);
-                                            IValue val = data.GetValue();
-
-                                            Console.WriteLine(val.Value);
-                                            
-                                      
-
-                                    }
-
-                                }
-                               
-                               
-                            }
-                        }
-                    }
-                            
-              
-                 
-                }
-                catch (Exception)
-                {
-
-                    throw;
+                    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
                 }
 
-                //  var cl = manager.getClient();
+                await MaintenceEventGenerator.Eventmonitoring(url);
+                /*  NorthBoundInteractionManager.InteractionManager manager = new NorthBoundInteractionManager.InteractionManager();
+                  await manager.Manager(url);
+                  var client = manager.getClient();
 
-                /*
-                      try
-                         {
-                             BaSyx.Models.Core.AssetAdministrationShell.Implementations.Submodel val = await manager.GetSubmodels();
-                             if(val != null)
-                             {
-                                 Console.WriteLine(val.IdShort);
-                             }
-                             else
-                             {
-                                 System.Threading.Thread.Sleep(1000);
-                                 await manager.Manager(url);
-                                 var vale =await manager.GetSubmodels();
-                                 Console.WriteLine(vale.ToString());
+                  try
+                  {
 
-                             }
-                         }
-                         catch
-                         {
-                             System.Threading.Thread.Sleep(1000);
-                             await manager.Manager(url);
-                             var vale = await manager.GetSubmodels();
-                             Console.WriteLine(vale.ToString());
-                         }
-                               */
+                      var sub = client.RetrieveSubmodels();
+                      var result = sub.Entity.Values;
+                      foreach(ISubmodel submodel in result)
+                      {
+                          if(submodel.IdShort == "MaintenanceSubmodel")
+                          {
+                             var submodelElementsValues =submodel.SubmodelElements.Values;
+                             // ISubmodelElementCollection col = (ISubmodelElementCollection)submodelElementsValues.GetEnumerator();
+                              foreach(var s in submodelElementsValues)
+                              {
+                                  Console.WriteLine(s.IdShort);
+                                  ListofMaintenanceInterval.Add(s.IdShort);
+                                  Console.WriteLine(s.GetType());
+                              }
+
+                              foreach(var a in ListofMaintenanceInterval)
+                              {
+                                  var MaintenceDetatils = client.RetrieveSubmodelElement("MaintenanceSubmodel", a);
+                                 var ResultJson = MaintenceDetatils.Entity.ToJson();
+
+                                  SubmodelElementCollection submodelElementsCollection = JsonConvert.DeserializeObject<SubmodelElementCollection>(ResultJson);
+                                  foreach(var element in submodelElementsCollection.Value)
+                                  {
+
+                                    //  Console.WriteLine(element.IdShort);
+                                      if(element.IdShort == "MaintenanceDetails")
+                                      {
+                                          SubmodelElementCollection submodelElementsCollection1 = JsonConvert.DeserializeObject<SubmodelElementCollection>(element.ToJson());
+                                          foreach (var data in submodelElementsCollection1.Value)
+                                          {
+
+                                             // Console.WriteLine(data.IdShort);
+                                              if(data.IdShort == "MaintenanceThreshold")
+                                              {
+                                                  IValue val = data.GetValue();
+
+                                                  Console.WriteLine(val.Value);
+                                                  MaintenanceConfiguration.Add(a, (int)val.Value);
+                                                  Console.WriteLine(MaintenanceConfiguration.Count);
+
+                                              }
+
+
+                                          }
+                                      }
+
+
+                                  }
+
+
+                              }
+                          }
+                      }
+
+
+
+                  }
+                  catch (Exception)
+                  {
+
+                      throw;
+                  }
+
+                  //  var cl = manager.getClient();
+
+                  /*
+                        try
+                           {
+                               BaSyx.Models.Core.AssetAdministrationShell.Implementations.Submodel val = await manager.GetSubmodels();
+                               if(val != null)
+                               {
+                                   Console.WriteLine(val.IdShort);
+                               }
+                               else
+                               {
+                                   System.Threading.Thread.Sleep(1000);
+                                   await manager.Manager(url);
+                                   var vale =await manager.GetSubmodels();
+                                   Console.WriteLine(vale.ToString());
+
+                               }
+                           }
+                           catch
+                           {
+                               System.Threading.Thread.Sleep(1000);
+                               await manager.Manager(url);
+                               var vale = await manager.GetSubmodels();
+                               Console.WriteLine(vale.ToString());
+                           }
+                                 */
 
             });
            
@@ -217,11 +237,6 @@ namespace HelloAssetAdministrationShell
             Console.WriteLine("this is a new program");
 
 
-        }
-
-        private static void GetValue(object sender, ValueChangedArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         [Obsolete]

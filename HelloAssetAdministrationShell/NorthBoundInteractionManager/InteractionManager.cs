@@ -119,6 +119,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             return _client;
         }
 
+
     /*    public Task<Submodel> GetSubmodels()
         {
             Submodel sub = (Submodel)_client.RetrieveSubmodels();
