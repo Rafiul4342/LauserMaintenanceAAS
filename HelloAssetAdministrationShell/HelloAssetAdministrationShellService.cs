@@ -203,7 +203,7 @@ namespace HelloAssetAdministrationShell
                             {
                                 new Property<string>("OperatingHours","00:00:00"),
                                 new Property<int>("MaintenanceWarning",200),
-                                new Property<int>("MaintenanceThreshold",250),
+                                new Property<int>("MaintenanceThreshold",5),
                                 new Property<Event>("MaintenanceWarningAlarm"),
                                 new Property<Event>("MaintenanceAlarm")
 
@@ -260,7 +260,7 @@ namespace HelloAssetAdministrationShell
                             {
                                 new Property<string>("OperatingHours","00:00:00"),
                                 new Property<int>("MaintenanceWarning",400),
-                                new Property<int>("MaintenanceThreshold",500),
+                                new Property<int>("MaintenanceThreshold",10),
                                 new Property<Event>("MaintenanceWarningAlarm"),
                                 new Property<Event>("MaintenanceAlarm")
 
@@ -316,7 +316,7 @@ namespace HelloAssetAdministrationShell
                             {
                                 new Property<string>("OperatingHours","00:00:00"),
                                 new Property<int>("MaintenanceWarning",800),
-                                new Property<int>("MaintenanceThreshold",1000),
+                                new Property<int>("MaintenanceThreshold",15),
                                 new Property<Event>("MaintenanceWarningAlarm"),
                                 new Property<Event>("MaintenanceAlarm")
 

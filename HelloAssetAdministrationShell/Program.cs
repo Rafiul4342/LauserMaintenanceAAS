@@ -119,17 +119,33 @@ namespace HelloAssetAdministrationShell
             Console.WriteLine("this is a new program");
             List<string>ListofMaintenanceInterval = new List<string>();
             Dictionary<String, int> MaintenanceConfiguration = new Dictionary<string, int>();
+            SendMaintenanceOrders order = new SendMaintenanceOrders();
        
             Task interactionManager = Task.Run(async () => {
 
+
+                List<Task> tasks = new List<Task>();
+
                 Dictionary<string, int> maintenanceConfiguration = await MaintenceConfiguration.RetrieveMaintenanceConfiguration(url);
 
+                MaintenceMonitor monitor = new MaintenceMonitor(url);
                 foreach (var kvp in maintenanceConfiguration)
                 {
                     Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+                    var task = monitor.Monitor_values(kvp.Key, kvp.Value);
+                    tasks.Add(task);
                 }
 
-                await MaintenceEventGenerator.Eventmonitoring(url);
+                await Task.Run(async () =>
+                 {
+                     while (true)
+                     {
+                         await Task.WhenAll(tasks);
+                         await Task.Delay(TimeSpan.FromSeconds(60));
+                     }
+                 }
+               );
+               // await MaintenceEventGenerator.Eventmonitoring(url);
                 /*  NorthBoundInteractionManager.InteractionManager manager = new NorthBoundInteractionManager.InteractionManager();
                   await manager.Manager(url);
                   var client = manager.getClient();

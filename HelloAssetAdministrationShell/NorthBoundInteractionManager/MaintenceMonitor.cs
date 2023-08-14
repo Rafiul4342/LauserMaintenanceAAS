@@ -1,4 +1,7 @@
-﻿using BaSyx.Models.Core.Common;
+﻿using BaSyx.AAS.Client.Http;
+using BaSyx.Models.Core.Common;
+using HelloAssetAdministrationShell.I40MessageExtension.MessageFormat;
+using HelloAssetAdministrationShell.MqttConnection.TimeMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,45 +9,78 @@ using System.Threading.Tasks;
 
 namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 {
+    
     public class MaintenceMonitor
     {
+        
+        public AssetAdministrationShellHttpClient _client;
+        public SecondsConverter seconds;
+        public static event EventHandler<MaintenanceEventArgs> MaintenanceEvent;
+
+        public MaintenceMonitor(string url)
+        {
+           
+           this._client = new AssetAdministrationShellHttpClient(new Uri(url));
+           this.seconds = new SecondsConverter();
+ 
+        }
       
-        public int Thresold { set; get; }
-        public async Task Monitor_values(string url, string MaintenceIntevals, int thresold)
+        public async Task Monitor_values(string MaintenceIntevals, int thresold)
         {
-            this.Thresold = thresold;
-            try
+            bool thresoldReached = false;
+            
+            
+        while (true)
             {
-                NorthBoundInteractionManager.InteractionManager manager = new NorthBoundInteractionManager.InteractionManager();
-                await manager.Manager(url);
-                var client = manager.getClient();
+                var  data = _client.RetrieveSubmodelElementValue("MaintenanceSubmodel", MaintenceIntevals + "/" + "MaintenanceDetails" + "/" + "OperatingHours");
+                Console.WriteLine(data.Entity.Value);
+                int actualtime = seconds.ConverCurrenthourstosecond((string)data.Entity.Value);
+                Console.WriteLine(actualtime);
+                if(!thresoldReached && actualtime >= thresold)
+                {
+                    thresoldReached = true;
+                    MaintenanceEvent?.Invoke(this, new MaintenanceEventArgs(MaintenceIntevals, thresold));
+                }
+                else if(thresoldReached && actualtime <= thresold)
+                {
+                    thresoldReached = false;
+                }
                
+            await Task.Delay(1000);
 
-                try
-                {
-                    var data = client.RetrieveSubmodelElementValue("MaintenanceSubmodel", MaintenceIntevals + "/" + "MaintenanceDetails" + "/" + "OperatingHours");
-                    Console.WriteLine(data.Entity.Value);
-                    var even = client.RetrieveSubmodelElement("MaintenanceSubmodel", MaintenceIntevals + "/" + "MaintenanceDetails" + "/" + "OperatingHours");
-                    even.Entity.ValueChanged += Entity_ValueChanged;
-
-                }
-                catch
-                {
-                    Console.WriteLine("Submodel Element doesnot exist");
-                }
-
+             //   var even = _client.RetrieveSubmodelElement("MaintenanceSubmodel", MaintenceIntevals + "/" + "MaintenanceDetails" + "/" + "OperatingHours");
             }
-            catch
-            {
-                Console.WriteLine("Clinent could not be instantiated");
-            }
-        }
+               
+        /*   try
+           {
+               even.Entity.ValueChanged += (sender, e) => {
+            //       Console.WriteLine("Subscribed to event");
 
-        private void Entity_ValueChanged(object sender, ValueChangedArgs e)
+                   Entity_ValueChanged(thresold, (ValueChangedArgs)e.Value);
+
+               };
+           }
+
+
+       catch
+       {
+           Console.WriteLine("Submodel Element doesnot exist");
+       }
+        */
+    }
+        /*
+        private void Entity_ValueChanged(int interval, ValueChangedArgs e)
         {
-            Console.WriteLine(e.Value);
-        }
+            int actualIValue = Convert.ToInt32(e.Value);
+            Console.WriteLine($"Value change in Interval {interval} .New value : {actualIValue}");
 
+            if (actualIValue == interval)
+            {
+                Console.WriteLine("Maintence threosld Reached");
+            }
+
+        }
+        */
        
         
     }

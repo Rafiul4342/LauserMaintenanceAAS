@@ -11,16 +11,13 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         public static async Task Eventmonitoring(string url)
         {
             Dictionary<string, int> maintenanceConfiguration = await MaintenceConfiguration.RetrieveMaintenanceConfiguration(url);
-
+            MaintenceMonitor monitor = new MaintenceMonitor(url);
             foreach (var kvp in maintenanceConfiguration)
             {
                 Console.WriteLine($"{kvp.Key}: {kvp.Value}");
-                MaintenceMonitor monitor = new MaintenceMonitor();
-                await monitor.Monitor_values(url, kvp.Key, kvp.Value);
+               
+               monitor.Monitor_values(kvp.Key, kvp.Value);
             }
-
-
-
 
         }
     }
