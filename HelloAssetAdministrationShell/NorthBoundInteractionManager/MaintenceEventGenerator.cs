@@ -16,7 +16,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             {
                 Console.WriteLine($"{kvp.Key}: {kvp.Value}");
                
-               monitor.Monitor_values(kvp.Key, kvp.Value);
+             await monitor.Monitor_values(kvp.Key, kvp.Value);
             }
 
         }

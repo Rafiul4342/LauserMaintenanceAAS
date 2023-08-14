@@ -82,12 +82,14 @@ namespace HelloAssetAdministrationShell
             string ClinetID = "test01";
 
             MqttClientFunction cl = new MqttClientFunction();
+            SendMaintenanceOrders order = new SendMaintenanceOrders();
+            await order.SendMaintenanceOrders1(ClinetID);
 
-            HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper.MqttNorthbound mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org", 1883, ClinetID);
+            //  HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper.MqttNorthbound mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org", 1883, ClinetID);
 
 
-            await mqttclient.SubscribeAsync("rafiul");
-            mqttclient.MessageReceived += OnMessage;
+            //            await mqttclient.SubscribeAsync("rafiul");
+            //          mqttclient.MessageReceived += OnMessage;
 
 
             //Action that gets executued when server is fully started 
@@ -119,7 +121,7 @@ namespace HelloAssetAdministrationShell
             Console.WriteLine("this is a new program");
             List<string>ListofMaintenanceInterval = new List<string>();
             Dictionary<String, int> MaintenanceConfiguration = new Dictionary<string, int>();
-            SendMaintenanceOrders order = new SendMaintenanceOrders();
+          
        
             Task interactionManager = Task.Run(async () => {
 
@@ -129,6 +131,7 @@ namespace HelloAssetAdministrationShell
                 Dictionary<string, int> maintenanceConfiguration = await MaintenceConfiguration.RetrieveMaintenanceConfiguration(url);
 
                 MaintenceMonitor monitor = new MaintenceMonitor(url);
+
                 foreach (var kvp in maintenanceConfiguration)
                 {
                     Console.WriteLine($"{kvp.Key}: {kvp.Value}");
@@ -262,6 +265,7 @@ namespace HelloAssetAdministrationShell
             var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
             // Implement your logic here to handle the received message
             Console.WriteLine($"Received message on topic '{topic}': {payload}");
+
         }
     }
 }
