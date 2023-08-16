@@ -12,6 +12,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 {
     public class MaintenceConfiguration
     {
+        
         public static async Task<Dictionary<string, int>> RetrieveMaintenanceConfiguration(string url)
         {
             Dictionary<string, int> maintenanceConfiguration = new Dictionary<string, int>();

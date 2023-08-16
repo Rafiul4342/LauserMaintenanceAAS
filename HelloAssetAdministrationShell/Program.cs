@@ -44,6 +44,8 @@ namespace HelloAssetAdministrationShell
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         public static object I40MessageExtension { get; private set; }
+        
+        public static string url = "http://localhost:5180";
 
         [Obsolete]
         private static async Task InitializeAsync()
@@ -83,7 +85,7 @@ namespace HelloAssetAdministrationShell
 
             MqttClientFunction cl = new MqttClientFunction();
             SendMaintenanceOrders order = new SendMaintenanceOrders();
-            await order.SendMaintenanceOrders1(ClinetID);
+            await order.SendMaintenanceOrders1(ClinetID, "test.mosquitto.org",1883,url);
 
             //  HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper.MqttNorthbound mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org", 1883, ClinetID);
 
@@ -117,7 +119,7 @@ namespace HelloAssetAdministrationShell
         public static async Task Main(string[] args)
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
-            string url = "http://localhost:5180";
+          //  string url = "http://localhost:5180";
             Console.WriteLine("this is a new program");
             List<string>ListofMaintenanceInterval = new List<string>();
             Dictionary<String, int> MaintenanceConfiguration = new Dictionary<string, int>();

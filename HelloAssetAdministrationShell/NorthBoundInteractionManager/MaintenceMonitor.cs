@@ -16,7 +16,6 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         public AssetAdministrationShellHttpClient _client;
         public SecondsConverter seconds;
         public static event EventHandler<MaintenanceEventArgs> MaintenanceEvent;
-
         public MaintenceMonitor(string url)
         {
            
