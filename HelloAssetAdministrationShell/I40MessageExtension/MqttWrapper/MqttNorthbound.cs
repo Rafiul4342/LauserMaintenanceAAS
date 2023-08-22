@@ -23,17 +23,19 @@ namespace HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper
         public List<string> mymesseges;
 
         [Obsolete]
-        public MqttNorthbound(string brokerIpAddress, int brokerPort, string clientId)
+        public MqttNorthbound(string brokerIpAddress, int brokerPort, string clientId,string topic)
         {
            
             _options = new MqttClientOptionsBuilder()
             .WithTcpServer(brokerIpAddress, brokerPort)
             .WithClientId(clientId)
+            .WithKeepAlivePeriod(TimeSpan.FromSeconds(10))
             .Build();
 
             _mqttClient = new MqttFactory().CreateMqttClient();
             _mqttClient.ApplicationMessageReceivedAsync += HandleReceivedMessages;
             ConnectAsync(_options).Wait();
+            
 
         }
 
@@ -51,12 +53,10 @@ namespace HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper
         }
 
         public async Task SubscribeAsync(string topic)
-        {
-           
+        {  
             
                 await _mqttClient.SubscribeAsync(topic);
-         
-
+       
         }
 
         [Obsolete]
@@ -91,11 +91,7 @@ namespace HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper
         {
             return mymesseges;
         }
-        public void Dispose()
-        {
-            _mqttClient.DisconnectAsync().Wait();
-            _mqttClient.Dispose();
-        }
+       
     }
 
 }

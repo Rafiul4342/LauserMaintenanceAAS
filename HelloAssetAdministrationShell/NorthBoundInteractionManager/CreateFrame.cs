@@ -10,7 +10,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
     public static class CreateFrame
     {
 
-        public static Frame GetFrame(string ConversationID, String messageID, string Messagetype)
+        public static Frame GetFrame(string ConversationID, int messageID, string Messagetype)
         {
 
             var frame = new Frame

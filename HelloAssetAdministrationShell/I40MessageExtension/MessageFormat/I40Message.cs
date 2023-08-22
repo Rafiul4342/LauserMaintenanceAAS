@@ -8,9 +8,10 @@ namespace HelloAssetAdministrationShell.I40MessageExtension.MessageFormat
 {
     public class I40Message
     {
-        public Frame frame { get; set; }
+       
 
         public List<SubmodelElementCollection> interactionElements { get; set; }
+        public Frame frame { get; set; }
 
         public void SetInteractionElement(List<SubmodelElementCollection> interactionElements)
         {

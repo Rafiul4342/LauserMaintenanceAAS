@@ -10,10 +10,6 @@ namespace HelloAssetAdministrationShell.I40MessageExtension.MessageFormat
         public string type { get; set; }
         public string idType { get; set; }
         public string value { get; set; }
-
-        public static implicit operator List<object>(Key v)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

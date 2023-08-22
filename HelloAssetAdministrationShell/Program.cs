@@ -82,10 +82,10 @@ namespace HelloAssetAdministrationShell
             server.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
             server.AddBaSyxUI("DashBoard");
             string ClinetID = "test01";
-
+            string Subscriptiontopic = "rafiul";
             MqttClientFunction cl = new MqttClientFunction();
             SendMaintenanceOrders order = new SendMaintenanceOrders();
-            await order.SendMaintenanceOrders1(ClinetID, "test.mosquitto.org",1883,url);
+            order.SendMaintenanceOrders1(ClinetID, "test.mosquitto.org",1883,url,Subscriptiontopic);
 
             //  HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper.MqttNorthbound mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org", 1883, ClinetID);
 

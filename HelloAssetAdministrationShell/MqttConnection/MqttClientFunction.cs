@@ -137,7 +137,7 @@ namespace HelloAssetAdministrationShell.MqttConnection
                         int cv_2 = _secondsConverter.ConverCurrenthourstosecond(CvC_2);
                             Console.WriteLine(cv_2);
                         string incCV_2 = _secondsConverter.incrementedtimeformatter(cv_2);
-                            string counterupdate_2 = JsonConvert.SerializeObject(incCV_2);
+                            string counterupdate_2 =  (incCV_2);
 
                             var update = await client.PutAsync("http://172.18.160.1:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_2/MaintenanceDetails/OperatingHours/value", new StringContent(counterupdate_2,
                                    Encoding.UTF8, "application/json"));
