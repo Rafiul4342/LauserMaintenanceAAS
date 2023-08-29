@@ -23,7 +23,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
         public static string ConvessationID;
 
-        public static string sender = "Machine_AAS_1";
+        public static string sender = "BASYX_MACHINE_AAS_1";
 
         public static Dictionary<string, int> myMaintenceCounter = new Dictionary<string, int>();
 
@@ -55,6 +55,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             }
         }
 
+
         [Obsolete]
         public async void SendMaintenanceOrders1(string clinetID, string BrokerAddress, int port, string AASurl, string topic)
         {
@@ -68,6 +69,11 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             mqttclient.MessageReceived += OnMessage;
 
             await mqttclient.SubscribeAsync(topic);
+        }
+
+        public async Task HandleNotify_accepted(object message)
+        {
+
         }
 
         [Obsolete]
@@ -111,6 +117,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
         }
 
+        
 
         [Obsolete]
         private async void OnMessage(object sender, MqttApplicationMessageReceivedEventArgs e)
@@ -128,12 +135,25 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             try { var datadeserialize = JsonConvert.DeserializeObject<dynamic>(payload);
                 
                 Console.WriteLine(datadeserialize);
+                var Ie = datadeserialize.interactionElements;
+                Console.WriteLine(Ie);
+                var type = Ie.GetType();
+                Console.WriteLine(type);
+                var Frame = datadeserialize.frame;
+                Console.WriteLine(Frame);
+                string Messagetype = Frame.type;
+                var Receiver = Frame.receiver.identification.id;
+                Console.WriteLine(Receiver);
+                Console.WriteLine(Messagetype);
+
+
             }
             catch(Exception ex)
             {
                 Console.WriteLine("Message couldnot be deserialized" );
                 Console.WriteLine(ex.Message);
             }
+            
           
             
            await Task.Delay(100);
