@@ -28,11 +28,9 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         public static Dictionary<string, int> myMaintenceCounter = new Dictionary<string, int>();
 
         public static Dictionary<string, ConversationInfo> ConversationTracker = new Dictionary<string, ConversationInfo>();
+        public MaintenaceActions actions;
 
 
-        
-      
-        
         [Obsolete]
         public async Task RetryPolicy(I40Message mes, string ConID)
         {
@@ -40,13 +38,13 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             System.Threading.Thread.Sleep(1000);
             for (int retry = 0; retry < 5;  retry++)
             {
-                if (SendMaintenanceOrders.ConversationTracker.ContainsKey(ConID) && SendMaintenanceOrders.ConversationTracker[ConID].OrderStatus == "MaintenanceOrderAccepted")
+                if (SendMaintenanceOrders.ConversationTracker.ContainsKey(ConID) && SendMaintenanceOrders.ConversationTracker[ConID].OrderStatus == "OrderRequestOnProcess")
                 {
                     Console.WriteLine("MainteneaceOrderAccepted Stoping Retry Policy");
                     break;
                 }
 
-                else if (SendMaintenanceOrders.ConversationTracker.ContainsKey(ConID) && SendMaintenanceOrders.ConversationTracker[ConID].OrderStatus == "MaintenanceOrderSent")
+                else if (SendMaintenanceOrders.ConversationTracker.ContainsKey(ConID) && SendMaintenanceOrders.ConversationTracker[ConID].OrderStatus == "OrderSubmitted")
                 {
                     var result = mqttclient.PublishAsync("test", mes);
                     await Task.Delay(1000);
@@ -59,21 +57,48 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         [Obsolete]
         public async void SendMaintenanceOrders1(string clinetID, string BrokerAddress, int port, string AASurl, string topic)
         {
+            
             MaintenceMonitor.MaintenanceEvent += HandleMaintenceOrder;
             this.ClinetID = clinetID;
             this.brokeraddress = BrokerAddress;
             this.brokerport = port;
             this.url = AASurl;
             this.mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org", 1883, ClinetID, topic);
-
+            this.actions = new MaintenaceActions(url);
             mqttclient.MessageReceived += OnMessage;
 
             await mqttclient.SubscribeAsync(topic);
         }
 
-        public async Task HandleNotify_accepted(object message)
+        public void HandleNotify_accepted(dynamic message)
         {
+            var data = message;
+            var ConversationID = data.ConversationID;
+            Console.WriteLine(data);
+            var Ie = message.interactionElements;
+            Console.WriteLine(Ie);
+            ConversationTracker[ConversationID].OrderStatus = "OrderRequestOnProcess";
+            actions.UpdateMaintenceRecord(ConversationTracker[ConversationID].MaintenanceType, Ie);
+            actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderRequestOnProcess");
+        }
+        public async Task Handle_Change(dynamic message, String Maintenancetype)
+        {
+            var data = message;
+            Console.WriteLine(data);
+            var ConversationID = data.ConversationID;
+            actions.UpdateMaintenanceCounter(ConversationTracker[ConversationID]);
+            var Ie = data.interactionElements;
+            //logic to create I.40 Respond message
 
+            actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderCompleted");
+            actions.UpdateMaintenceRecord(ConversationTracker[ConversationID].MaintenanceType, Ie);
+
+            ConversationTracker[ConversationID].OrderStatus = "OrderCompleted";
+            ConversationTracker[ConversationID].EndTime = DateTime.Now;
+           
+            // serialize and update message to publish 
+
+            await mqttclient.PublishAsync("Test", data);
         }
 
         [Obsolete]
@@ -97,24 +122,24 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 I40Message message = new I40Message();
                 var interactionElement =await RetreiveInteractionElement.GetInteractionElement(url, e.Maintenancetype);
                 message.interactionElements = interactionElement;
-                string ConversationID = "DMU80eVo1" + e.Maintenancetype + "::"+ myMaintenceCounter[e.Maintenancetype].ToString();
+                string ConversationID = "DMU80eVo1" + e.Maintenancetype + "::_"+ myMaintenceCounter[e.Maintenancetype].ToString();
                 var frame = CreateFrame.GetFrame(e.Maintenancetype + myMaintenceCounter[e.Maintenancetype].ToString(), 1, "NOTIFY_INIT");
                 message.Setframe(frame);
-                ConversationTracker.Add(ConversationID, value: new ConversationInfo { MaintenceType = e.Maintenancetype, OrderStatus = "MaintenanceOrderSent", StartTime = DateTime.Now });
+                ConversationTracker.Add(ConversationID, value: new ConversationInfo { MaintenanceType = e.Maintenancetype, ID= "BASYX_MACHINE_AAS_1", OrderStatus = "OrderSubmitted", StartTime = DateTime.Now });
                 var result = mqttclient.PublishAsync("test", message);
+                if (result.IsCompleted)
+                {
+                    actions.UpdateMaintenanceOrderStatus(e.Maintenancetype, "OrderSubmitted");
+                }
                 await RetryPolicy(message, ConversationID);
                 string message1 = JsonConvert.SerializeObject(message);
-                Console.WriteLine(message1);
-               
-               
+                Console.WriteLine(message1);  
                 
             }
             catch
             {
                 Console.WriteLine("Unable to retreive value");
             }
-
-
         }
 
         
@@ -125,28 +150,66 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             var topic = e.ApplicationMessage.Topic;
             var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
             Console.WriteLine(payload.GetType());
-            
-           // JObject jsonResponse = JObject.Parse(payload);
+
+            // JObject jsonResponse = JObject.Parse(payload);
             //List<JObject> mydata = new List<JObject>();
             //mydata.Add(jsonResponse);
 
+         
             // Implement your logic here to handle the received message
           //  Console.WriteLine($"Received message on topic '{topic}': {payload}");
             try { var datadeserialize = JsonConvert.DeserializeObject<dynamic>(payload);
                 
                 Console.WriteLine(datadeserialize);
+                Console.WriteLine(datadeserialize.GetType());
+                var Receiver = datadeserialize.frame.receiver.identification.id;
+                Console.WriteLine(Receiver);
+                var MessageType = datadeserialize.frame.type;
+                var ConversationID = datadeserialize.frame.conversationId;
+                Console.WriteLine(ConversationID);
                 var Ie = datadeserialize.interactionElements;
                 Console.WriteLine(Ie);
                 var type = Ie.GetType();
                 Console.WriteLine(type);
-                var Frame = datadeserialize.frame;
-                Console.WriteLine(Frame);
-                string Messagetype = Frame.type;
-                var Receiver = Frame.receiver.identification.id;
-                Console.WriteLine(Receiver);
-                Console.WriteLine(Messagetype);
 
+                if (Receiver != sender)
+                {
+                    return;
+                }
+                else if(Receiver == sender && ConversationTracker.ContainsKey(ConversationID))
+                {
+                    var state = ConversationTracker[ConversationID].OrderStatus;
+                    if (MessageType == "NOTIFY_ACCEPTED" && state == "OrderSubmitted")
+                    {
+                        HandleNotify_accepted(datadeserialize,);
+                    }
+                    else if (MessageType == "NOTIFY_ACCEPTED" && state == "OrderRequestOnProcess")
+                    {
+                        Console.WriteLine("Following Message Already Processed");
+                    }
+                    else if (MessageType == "Change" && state == "OrderRequestOnProcess")
+                    {
 
+                        actions.UpdateMaintenanceCounter(ConversationTracker[ConversationID]);
+
+                        //logic to create I.40 Respond message
+                        
+                        actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderCompleted");
+                        actions.UpdateMaintenceRecord(ConversationTracker[ConversationID].MaintenanceType, Ie);
+                        
+                        ConversationTracker[ConversationID].OrderStatus = "OrderCompleted";
+                        ConversationTracker[ConversationID].EndTime = DateTime.Now;
+
+                    }
+
+                    else if (MessageType == "Change" && state == "OrderCompleted")
+                    {
+                        Console.WriteLine($"maintenceLifecycle already Compleated with history {0}",ConversationTracker[ConversationID].ToString());
+                    }
+                   
+                }
+                   
+              
             }
             catch(Exception ex)
             {

@@ -45,8 +45,6 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                     {
                         name = "informationReceiver"
                     }
-
-
                 },
                 conversationId = ConversationID,
                 messageId = messageID,

@@ -7,8 +7,9 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 {
     public class ConversationInfo
     {
-        public string MaintenceType;
+        public string MaintenanceType;
         public string OrderStatus;
+        public string ID;
         public DateTime StartTime;
         public DateTime EndTime;
     }
