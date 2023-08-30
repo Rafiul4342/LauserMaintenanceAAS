@@ -35,13 +35,25 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         public void UpdateMaintenanceCounter(string MaintenanceType)
         {
             IValue setToZero = new ElementValue("00:00:00",typeof(string));
-            var resetedcounter = _client.UpdateSubmodelElementValue("MaintenanceSubmodel", string.Concat(MaintenanceType, "/", "MaintenanceDetails", "/", "OperatingHours"),setToZero);
+            try
+            {
+                var resetedcounter = _client.UpdateSubmodelElementValue("MaintenanceSubmodel", string.Concat(MaintenanceType, "/", "MaintenanceDetails", "/", "OperatingHours"), setToZero);
+                if (resetedcounter.Success)
+                {
+                    Console.WriteLine("Maintenance counter Reseted successfully");
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
         public void UpdateMaintenceRecord(string MaintenaceType, object record)
         {
             Console.WriteLine(record);
+            
+            Console.WriteLine(MaintenaceType);
         }
-
         public void UpdateMaintenanceHistoryCount(string MaintenanceType)
         {
             var Currentrecord = _client.RetrieveSubmodelElementValue("MaintenanceSubmodel", string.Concat(MaintenanceType, "/", "MaintenanceHistory/MaintenaceCounter"));

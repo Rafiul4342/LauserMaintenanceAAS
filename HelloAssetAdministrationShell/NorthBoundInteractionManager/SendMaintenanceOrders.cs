@@ -75,7 +75,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             var data = message;
             var ConversationID = data.ConversationID;
             Console.WriteLine(data);
-            var Ie = message.interactionElements;
+            var Ie = data.interactionElements;
             Console.WriteLine(Ie);
             ConversationTracker[ConversationID].OrderStatus = "OrderRequestOnProcess";
             actions.UpdateMaintenceRecord(ConversationTracker[ConversationID].MaintenanceType, Ie);
@@ -88,6 +88,14 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             var ConversationID = data.ConversationID;
             actions.UpdateMaintenanceCounter(ConversationTracker[ConversationID]);
             var Ie = data.interactionElements;
+            
+            I40Message mess = new I40Message();
+            mess.interactionElements = Ie;
+            var frame = CreateFrame.GetFrame(ConvessationID, 4, "PROCESS");
+            mess.Setframe(frame);
+
+            await mqttclient.PublishAsync("Test", mess);
+
             //logic to create I.40 Respond message
 
             actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderCompleted");
@@ -98,7 +106,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
            
             // serialize and update message to publish 
 
-            await mqttclient.PublishAsync("Test", data);
+          
         }
 
         [Obsolete]
@@ -181,7 +189,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                     var state = ConversationTracker[ConversationID].OrderStatus;
                     if (MessageType == "NOTIFY_ACCEPTED" && state == "OrderSubmitted")
                     {
-                        HandleNotify_accepted(datadeserialize,);
+                        HandleNotify_accepted(datadeserialize);
                     }
                     else if (MessageType == "NOTIFY_ACCEPTED" && state == "OrderRequestOnProcess")
                     {
