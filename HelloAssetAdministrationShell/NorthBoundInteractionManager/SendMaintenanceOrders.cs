@@ -154,7 +154,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             }
             catch
             {
-                Console.WriteLine("Unable to retreive value");
+                Console.WriteLine("Unable to retrieve value");
             }
         }
 
