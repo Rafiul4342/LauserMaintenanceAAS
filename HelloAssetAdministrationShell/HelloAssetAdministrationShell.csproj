@@ -46,6 +46,7 @@
  
   <ItemGroup>
     <Folder Include="data\" />
+    <Folder Include="I40MessageExtension\RevisedI40Message\" />
   </ItemGroup>
 
 </Project>

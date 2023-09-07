@@ -10,7 +10,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
     public static class CreateFrame
     {
 
-        public static Frame GetFrame(string ConversationID, int messageID, string Messagetype)
+        public static Frame GetFrame(string ConversationID, int messageID, string Messagetype,string Sender)
         {
 
             var frame = new Frame
@@ -22,7 +22,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                     {
 
 
-                        id = SendMaintenanceOrders.sender,
+                        id = Sender,
                         idType = "CUSTOM",
 
 
