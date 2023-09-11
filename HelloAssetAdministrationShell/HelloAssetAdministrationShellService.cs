@@ -215,7 +215,7 @@ namespace HelloAssetAdministrationShell
                                 {
                                     new Property<string>("MaintenanceElement","DMU80eVo1"),
                                     new Property<int>("MaintenanceThreshold",250),
-                                    new Property<string>("MaintenaceCompany","Lauscher"),
+                                    new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
                                 }
                             },
@@ -234,8 +234,10 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                    new Property<DateTime>("MaintenanceStart"), // type date timeStamp not understood(not found con we suse Date time)
-                                    new Property<DateTime>("MaintenanceEnd"),
+                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                    new Property<DateTime>("ActualMaintenanceEnd"),
                                     new Property<double>("MaintenanceCompletionTime"),
                                     new Property<string>("MaintenanceStaff"),
                                     new Property<double> ( "MaintenanceCost")
@@ -272,7 +274,7 @@ namespace HelloAssetAdministrationShell
                                 {
                                     new Property<string>("MaintenanceElement","DMU80eVo1"),
                                     new Property<int>("MaintenanceThreshold",500),
-                                    new Property<string>("MaintenaceCompany","Lauscher"),
+                                    new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
                                 }
                             },
@@ -291,8 +293,10 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                    new Property<DateTime>("MaintenanceStart",System.DateTime.UtcNow), // type date timeStamp not understood(not found con we suse Date time)
-                                    new Property<DateTime>("MaintenanceEnd"),
+                                   new Property<DateTime>("PlannedMaintenanceStart"),
+                                   new Property<DateTime>("PlannedMaintenanceEnd"),
+                                   new Property<DateTime>("ActualMaintenanceStart"),
+                                   new Property<DateTime>("ActualMaintenanceEnd"),
                                     new Property<double>("MaintenanceCompletionTime"),
                                     new Property<string>("MaintenanceStaff"),
                                     new Property<double> ( "MaintenanceCost")
@@ -328,7 +332,7 @@ namespace HelloAssetAdministrationShell
                                 {
                                     new Property<string>("MaintenanceElement","DMU80eVo1"),
                                     new Property<int>("MaintenanceThreshold",1000),
-                                    new Property<string>("MaintenaceCompany","Lauscher"),
+                                    new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
                                 }
                             },
@@ -347,8 +351,10 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                    new Property<DateTime>("MaintenanceStart",System.DateTime.UtcNow), // type date timeStamp not understood(not found con we suse Date time)
-                                    new Property<DateTime>("MaintenanceEnd"),
+                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                    new Property<DateTime>("ActualMaintenanceEnd"),
                                     new Property<double>("MaintenanceCompletionTime"),
                                     new Property<string>("MaintenanceStaff"),
                                     new Property<double> ( "MaintenanceCost")

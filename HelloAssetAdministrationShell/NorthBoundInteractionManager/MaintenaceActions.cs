@@ -19,6 +19,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         public AssetAdministrationShellHttpClient _client { get; set; }
         public SubmodelElementCollection IValue { get; private set; }
         public static List<SubmodelElementCollection> InteractionElements = new List<SubmodelElementCollection>();
+        
        public MaintenaceActions(string url)
         {
             this._client = new AssetAdministrationShellHttpClient(new Uri(url));
@@ -75,10 +76,53 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         }
         public void UpdateMaintenceRecord(dynamic ReceivedData)
         {
-            var InteractionElement = ReceivedData.interactionElements;
+           
             var ConversationID = ReceivedData.frame.conversationId.ToString();
+            Console.WriteLine(ConversationID);
+            // no need for this logic here 
+            var Ie = ReceivedData.interactionElements;
+                
+            //  dynamic jsonObject = JsonSerializer.Deserialize<dynamic>(Ie);
+            var d = Ie[0];
+            var I = d.Value;
+           
+                var collection = JsonConvert.DeserializeObject<SubmodelElementCollection>(I);
+                Console.WriteLine(collection);
+          
+           
+
+            foreach (var VARIABLE in collection)
+            {
+                    var id = VARIABLE.IdShort;
+                    IValue value = new ElementValue(VARIABLE.Value,VARIABLE.ValueType);
+                    try
+                    {
+                     var updatedvalue= _client.UpdateSubmodelElementValue("MaintenanceSubmodel",
+                            string.Concat(SendMaintenanceOrders.ConversationTracker[ConversationID].MaintenanceType,"/", "MaintenanceRecord/",
+                                VARIABLE.IdShort.ToString()),
+                            value);
+
+                     if (updatedvalue.Success)
+                     {
+                         Console.WriteLine($"Record is updated with idShort :{0} Value : {1}",VARIABLE.IdShort,VARIABLE.Value);
+                     }
+                     else
+                     {
+                         Console.WriteLine("Value is not updated");
+                     }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                 
+                    Console.WriteLine(VARIABLE.IdShort);
+              //      Console.WriteLine(VARIABLE.ValueType);
+                    Console.WriteLine(VARIABLE.Value);
+            }
+       
             
-            foreach (var VARIABLE in InteractionElement)
+           /* foreach (var VARIABLE in InteractionElement)
             {
                 foreach (var inter_Value in VARIABLE.value)
                 {
@@ -111,7 +155,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
                     }
                 }
-            }
+            }*/
 
         }
         public void UpdateMaintenanceHistoryCount(string MaintenanceType)
@@ -119,8 +163,8 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             var Currentrecord = _client.RetrieveSubmodelElementValue("MaintenanceSubmodel", string.Concat(MaintenanceType, "/", "MaintenanceHistory/MaintenaceCounter"));
             var updateRecord =Convert.ToInt64(Currentrecord.Entity.Value) + 1;
             IValue updatedValue = new ElementValue(updateRecord, typeof(int));
-            var updatedr = _client.UpdateSubmodelElementValue("MaintenanceSubmodel", string.Concat(MaintenanceType, "/", "MaintenanceHistory/MaintenaceCounter"), updatedValue);
-            if (updatedr.Success)
+            var updated = _client.UpdateSubmodelElementValue("MaintenanceSubmodel", string.Concat(MaintenanceType, "/", "MaintenanceHistory/MaintenaceCounter"), updatedValue);
+            if (updated.Success)
             {
                 Console.WriteLine("Record Update Successfully");
             }
@@ -130,7 +174,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             }
         }
 
-        
+
 
     }
 }

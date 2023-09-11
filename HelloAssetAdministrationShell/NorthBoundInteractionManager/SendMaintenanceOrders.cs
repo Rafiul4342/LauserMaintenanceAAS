@@ -1,14 +1,18 @@
-﻿using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
+﻿
 using HelloAssetAdministrationShell.I40MessageExtension.MessageFormat;
-using HelloAssetAdministrationShell.MqttConnection;
+
 using MQTTnet.Client;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using System.Threading.Tasks;
+using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
+
 
 namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 {
@@ -39,7 +43,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
            
             for (int retry = 0; retry < 5;  retry++)
             {
-                await Task.Delay(5000);
+                await Task.Delay(1000000);
                 
                 if (SendMaintenanceOrders.ConversationTracker.ContainsKey(ConID) && SendMaintenanceOrders.ConversationTracker[ConID].OrderStatus == "OrderRequestOnProcess")
                 {
@@ -49,7 +53,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
                 else if (SendMaintenanceOrders.ConversationTracker.ContainsKey(ConID) && SendMaintenanceOrders.ConversationTracker[ConID].OrderStatus == "OrderSubmitted")
                 {
-                    var result = mqttclient.PublishAsync("test", mes);
+                    var result = mqttclient.PublishAsync("Test", mes);
                    
                 }
 
@@ -77,12 +81,13 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         private async Task HandleNotify_accepted(dynamic message)
         {
             var data = message;
-            var ConversationID = data.frame.ConversationID;
-            Console.WriteLine(data);
-            var Ie = data.interactionElements;
-            Console.WriteLine(Ie);
+            
+            var ConversationID = data.frame.conversationId.ToString();
             ConversationTracker[ConversationID].OrderStatus = "OrderRequestOnProcess";
             actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderRequestOnProcess");
+            
+           
+           
             actions.UpdateMaintenceRecord(data);
            
         }
@@ -112,7 +117,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
            
 
           
-            ConversationTracker[ConversationID].EndTime = DateTime.Now;
+        //    ConversationTracker[ConversationID].EndTime = DateTime.Now;
 
 
         }
@@ -138,15 +143,15 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 I40Message message = new I40Message();
                 var interactionElement =await RetreiveInteractionElement.GetInteractionElement(url, e.Maintenancetype);
                 message.interactionElements = interactionElement;
-                string ConversationID = e.Maintenancetype + "::"+ myMaintenceCounter[e.Maintenancetype].ToString();
-                var frame = CreateFrame.GetFrame(ConvessationID, 1, "NOTIFY_INIT",senderAAS);
+                string ConversationID = e.Maintenancetype +"::"+ myMaintenceCounter[e.Maintenancetype].ToString(); 
+                Console.WriteLine(ConversationID);
+                var frame = CreateFrame.GetFrame(ConversationID, 1, "notify_init",senderAAS);
                 message.Setframe(frame);
                 ConversationTracker.Add(ConversationID, value: new ConversationInfo { MaintenanceType = e.Maintenancetype, ID= senderAAS, OrderStatus = "OrderSubmitted", StartTime = DateTime.Now });
-                var result = mqttclient.PublishAsync("test", message);
-                if (result.IsCompleted)
-                {
-                    actions.UpdateMaintenanceOrderStatus(e.Maintenancetype, "OrderSubmitted");
-                }
+                var result = mqttclient.PublishAsync("Test", message);
+
+               actions.UpdateMaintenanceOrderStatus(e.Maintenancetype, "OrderSubmitted");
+                
                 await RetryPolicy(message, ConversationID);
                 string message1 = JsonConvert.SerializeObject(message);
                 Console.WriteLine(message1);  
@@ -166,8 +171,8 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             var topic = e.ApplicationMessage.Topic;
             var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
             Console.WriteLine(payload.GetType());
-           
 
+           
             // JObject jsonResponse = JObject.Parse(payload);
             //List<JObject> mydata = new List<JObject>();
             //mydata.Add(jsonResponse);
@@ -203,8 +208,8 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
           //  Console.WriteLine($"Received message on topic '{topic}': {payload}");
             try { var datadeserialize = JsonConvert.DeserializeObject<dynamic>(payload);
                 
-            //    Console.WriteLine(datadeserialize);
-              //  Console.WriteLine(datadeserialize.GetType());
+            //  Console.WriteLine(datadeserialize);
+              //Console.WriteLine(datadeserialize.GetType());
                 var Frame = datadeserialize.frame;
                // Console.WriteLine(Frame);
                var Receiver = datadeserialize.frame.receiver.identification.id;
@@ -212,11 +217,27 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 var MessageType = datadeserialize.frame.type;
                 var ConversationID = datadeserialize.frame.conversationId.ToString();
                 Console.WriteLine(ConversationID);
+                // no need for this logic here 
                 var Ie = datadeserialize.interactionElements;
-                Console.WriteLine(Ie);
-                Console.WriteLine(Ie[0]);
+                
+                //  dynamic jsonObject = JsonSerializer.Deserialize<dynamic>(Ie);
                 var d = Ie[0];
-                var I = d.value;
+                var I = d.Value;
+                try
+                {
+                    var collection = JsonConvert.DeserializeObject<SubmodelElementCollection>(I);
+                    Console.WriteLine(collection);
+                    foreach (var VARIABLE in collection)
+                    {
+                       
+                        Console.WriteLine(VARIABLE.IdShort);
+                        Console.WriteLine(VARIABLE.Value);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
                 Console.WriteLine(I);
                 
 
@@ -231,15 +252,15 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 else if(Receiver == senderAAS && ConversationTracker.ContainsKey(ConversationID))
                 {
                     var state = ConversationTracker[ConversationID].OrderStatus;
-                    if (MessageType == "NOTIFY_ACCEPTED" && state == "OrderSubmitted")
+                    if (MessageType == "notify_accepted" && state == "OrderSubmitted")
                     {
                         HandleNotify_accepted(datadeserialize);
                     }
-                    else if (MessageType == "NOTIFY_ACCEPTED" && state == "OrderRequestOnProcess")
+                    else if (MessageType == "notify_accepted" && state == "OrderRequestOnProcess")
                     {
                         Console.WriteLine("Following Message Already Processed");
                     }
-                    else if (MessageType == "Change" && state == "OrderRequestOnProcess")
+                    else if (MessageType == "change" && state == "OrderRequestOnProcess")
                     {
 
                         actions.UpdateMaintenanceCounter(ConversationTracker[ConversationID]);
@@ -254,14 +275,13 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
                     }
 
-                    else if (MessageType == "Change" && state == "OrderCompleted")
+                    else if (MessageType == "change" && state == "OrderCompleted")
                     {
                         Console.WriteLine($"maintenceLifecycle already Compleated with history {0}",ConversationTracker[ConversationID].ToString());
                     }
                    
                 }
-                   
-              
+
             }
             catch(Exception ex)
             {
@@ -274,5 +294,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
            await Task.Delay(100);
 
         }
+
+       
     }
 }

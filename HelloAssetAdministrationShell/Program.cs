@@ -82,7 +82,7 @@ namespace HelloAssetAdministrationShell
             server.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
             server.AddBaSyxUI("DashBoard");
             string ClinetID = "test01";
-            string Subscriptiontopic = "rafiul";
+            string Subscriptiontopic = "aas-notification";
             MqttClientFunction cl = new MqttClientFunction();
             SendMaintenanceOrders order = new SendMaintenanceOrders();
             order.SendMaintenanceOrders1(ClinetID, "test.mosquitto.org",1883,url,Subscriptiontopic);
