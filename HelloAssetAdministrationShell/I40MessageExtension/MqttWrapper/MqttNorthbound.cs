@@ -85,6 +85,7 @@ namespace HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper
 
             await _mqttClient.PublishAsync(message);
             Console.WriteLine(message);
+            Console.WriteLine("MaintenanceCycleCompleted");
 
         }
         public List<string> getMessages()

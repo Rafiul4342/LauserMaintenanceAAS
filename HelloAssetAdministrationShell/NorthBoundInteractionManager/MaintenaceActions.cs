@@ -60,7 +60,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
         public void UpdateMaintenanceCounter(string MaintenanceType)
         {
-            IValue setToZero = new ElementValue("00:00:00");
+            IValue setToZero = new ElementValue("00:00:00",typeof(string));
             try
             {
                 var resetedcounter = _client.UpdateSubmodelElementValue("MaintenanceSubmodel", string.Concat(MaintenanceType, "/", "MaintenanceDetails", "/", "OperatingHours"), setToZero);
@@ -97,28 +97,26 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                     IValue value = new ElementValue(VARIABLE.Value,VARIABLE.ValueType);
                     try
                     {
-                     var updatedvalue= _client.UpdateSubmodelElementValue("MaintenanceSubmodel",
-                            string.Concat(SendMaintenanceOrders.ConversationTracker[ConversationID].MaintenanceType,"/", "MaintenanceRecord/",
+                        var updatedvalue = _client.UpdateSubmodelElementValue("MaintenanceSubmodel",
+                            string.Concat(SendMaintenanceOrders.ConversationTracker[ConversationID].MaintenanceType,
+                                "/", "MaintenanceRecord/",
                                 VARIABLE.IdShort.ToString()),
                             value);
 
-                     if (updatedvalue.Success)
-                     {
-                         Console.WriteLine($"Record is updated with idShort :{0} Value : {1}",VARIABLE.IdShort,VARIABLE.Value);
-                     }
-                     else
-                     {
-                         Console.WriteLine("Value is not updated");
-                     }
+                        if (updatedvalue.Success)
+                        {
+                            Console.WriteLine($"Record is updated with idShort :{0} Value : {1}", VARIABLE.IdShort,
+                                VARIABLE.Value);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Value is not updated");
+                        }
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
                     }
-                 
-                    Console.WriteLine(VARIABLE.IdShort);
-              //      Console.WriteLine(VARIABLE.ValueType);
-                    Console.WriteLine(VARIABLE.Value);
             }
        
             

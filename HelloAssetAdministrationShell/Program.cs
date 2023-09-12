@@ -83,9 +83,10 @@ namespace HelloAssetAdministrationShell
             server.AddBaSyxUI("DashBoard");
             string ClinetID = "test01";
             string Subscriptiontopic = "aas-notification";
+            string publishTopic = "BasyxMesAASOrderHandling";
             MqttClientFunction cl = new MqttClientFunction();
             SendMaintenanceOrders order = new SendMaintenanceOrders();
-            order.SendMaintenanceOrders1(ClinetID, "test.mosquitto.org",1883,url,Subscriptiontopic);
+            order.SendMaintenanceOrders1(ClinetID, "test.mosquitto.org",1883,url,Subscriptiontopic,publishTopic);
 
             //  HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper.MqttNorthbound mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org", 1883, ClinetID);
 
@@ -142,13 +143,13 @@ namespace HelloAssetAdministrationShell
                 }
 
                 await Task.Run(async () =>
-                 {
-                     while (true)
-                     {
+                    {
+                        while (true)
+                         {
                          await Task.WhenAll(tasks);
                          await Task.Delay(TimeSpan.FromSeconds(60));
+                        }
                      }
-                 }
                );
                // await MaintenceEventGenerator.Eventmonitoring(url);
                 /*  NorthBoundInteractionManager.InteractionManager manager = new NorthBoundInteractionManager.InteractionManager();
@@ -257,16 +258,6 @@ namespace HelloAssetAdministrationShell
 
             Console.WriteLine("this is a new program");
 
-
-        }
-
-        [Obsolete]
-        private static void OnMessage(object sender, MqttApplicationMessageReceivedEventArgs e)
-        {
-            var topic = e.ApplicationMessage.Topic;
-            var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-            // Implement your logic here to handle the received message
-            Console.WriteLine($"Received message on topic '{topic}': {payload}");
 
         }
     }

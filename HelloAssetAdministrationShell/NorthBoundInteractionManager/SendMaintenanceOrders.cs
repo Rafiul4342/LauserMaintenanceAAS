@@ -30,6 +30,8 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         public static string senderAAS = "BASYX_MACHINE_AAS_1";
 
         public static Dictionary<string, int> myMaintenceCounter = new Dictionary<string, int>();
+        
+        private string PublishTopic;
 
         public static Dictionary<string, ConversationInfo> ConversationTracker = new Dictionary<string, ConversationInfo>();
         public MaintenaceActions actions;
@@ -37,7 +39,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         public IEnumerable<object> IEvalue { get; private set; }
 
         [Obsolete]
-        public async Task RetryPolicy(I40Message mes, string ConID)
+        public async Task RetryPolicy(I40Message mes, string ConID,string topic)
         {
             Console.WriteLine("Retrypolicy started");
            
@@ -53,7 +55,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
                 else if (SendMaintenanceOrders.ConversationTracker.ContainsKey(ConID) && SendMaintenanceOrders.ConversationTracker[ConID].OrderStatus == "OrderSubmitted")
                 {
-                    var result = mqttclient.PublishAsync("Test", mes);
+                    var result = mqttclient.PublishAsync(topic, mes);
                    
                 }
 
@@ -63,10 +65,11 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
 
         [Obsolete]
-        public async void SendMaintenanceOrders1(string clinetID, string BrokerAddress, int port, string AASurl, string topic)
+        public async void SendMaintenanceOrders1(string clinetID, string BrokerAddress, int port, string AASurl, string topic,string publishTopic)
         {
             
             MaintenceMonitor.MaintenanceEvent += HandleMaintenceOrder;
+            this.PublishTopic = publishTopic;
             this.ClinetID = clinetID;
             this.brokeraddress = BrokerAddress;
             this.brokerport = port;
@@ -97,7 +100,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
           
             var ConversationID = data.frame.conversationId.ToString();
             actions.UpdateMaintenanceCounter(ConversationTracker[ConversationID].MaintenanceType);
-            ConversationTracker[ConversationID].OrderStatus = "OrderCompleted";
+           
             actions.UpdateMaintenceRecord(data);
             
           
@@ -105,19 +108,21 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             
             I40Message mess = new I40Message();
             mess.interactionElements = Ie;
-            var frame = CreateFrame.GetFrame(ConvessationID, 4, "PROCESS",senderAAS);
+            var frame = CreateFrame.GetFrame(ConversationID, 4, "process",senderAAS);
             mess.SetInteractionElement(Ie);
             mess.Setframe(frame);
-
-            await mqttclient.PublishAsync("Test", mess);
+            actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderCompleted");
+            ConversationTracker[ConversationID].EndTime = DateTime.Now;
+            ConversationTracker[ConversationID].OrderStatus = "OrderCompleted";
+            await mqttclient.PublishAsync(PublishTopic, mess);
 
             //logic to create I.40 Respond message
 
-            actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderCompleted");
+           
            
 
           
-        //    ConversationTracker[ConversationID].EndTime = DateTime.Now;
+
 
 
         }
@@ -125,7 +130,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         [Obsolete]
         public async void HandleMaintenceOrder(object sender, MaintenanceEventArgs e)
         {
-            Console.WriteLine($"MainteneceIntercal : {e.Maintenancetype} , Maintencethereold : {e.ThresoldValue}");
+            Console.WriteLine($"MaintenaneceInterval : {e.Maintenancetype} , Maintencethereold : {e.ThresoldValue}");
 
             try
             {
@@ -143,16 +148,16 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 I40Message message = new I40Message();
                 var interactionElement =await RetreiveInteractionElement.GetInteractionElement(url, e.Maintenancetype);
                 message.interactionElements = interactionElement;
-                string ConversationID = e.Maintenancetype +"::"+ myMaintenceCounter[e.Maintenancetype].ToString(); 
+                string ConversationID = "DMU80eVo1"+ e.Maintenancetype +"::"+ myMaintenceCounter[e.Maintenancetype].ToString(); 
                 Console.WriteLine(ConversationID);
                 var frame = CreateFrame.GetFrame(ConversationID, 1, "notify_init",senderAAS);
                 message.Setframe(frame);
                 ConversationTracker.Add(ConversationID, value: new ConversationInfo { MaintenanceType = e.Maintenancetype, ID= senderAAS, OrderStatus = "OrderSubmitted", StartTime = DateTime.Now });
-                var result = mqttclient.PublishAsync("Test", message);
+                var result = mqttclient.PublishAsync(PublishTopic, message);
 
                actions.UpdateMaintenanceOrderStatus(e.Maintenancetype, "OrderSubmitted");
                 
-                await RetryPolicy(message, ConversationID);
+                await RetryPolicy(message, ConversationID,PublishTopic);
                 string message1 = JsonConvert.SerializeObject(message);
                 Console.WriteLine(message1);  
                 
@@ -218,6 +223,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 var ConversationID = datadeserialize.frame.conversationId.ToString();
                 Console.WriteLine(ConversationID);
                 // no need for this logic here 
+                /*
                 var Ie = datadeserialize.interactionElements;
                 
                 //  dynamic jsonObject = JsonSerializer.Deserialize<dynamic>(Ie);
@@ -244,7 +250,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 Console.WriteLine(Ie);
                 var type = Ie.GetType();
                 Console.WriteLine(type);
-
+*/
                 if (Receiver != senderAAS)
                 {
                     return;
@@ -262,16 +268,16 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                     }
                     else if (MessageType == "change" && state == "OrderRequestOnProcess")
                     {
-
-                        actions.UpdateMaintenanceCounter(ConversationTracker[ConversationID]);
+                        Handle_Change(datadeserialize);
+                    //    actions.UpdateMaintenanceCounter(ConversationTracker[ConversationID].MaintenanceType);
 
                         //logic to create I.40 Respond message
                         
-                        actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderCompleted");
-                        actions.UpdateMaintenceRecord(datadeserialize);
+                     //   actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderCompleted");
+                       // actions.UpdateMaintenceRecord(datadeserialize);
                         
-                        ConversationTracker[ConversationID].OrderStatus = "OrderCompleted";
-                        ConversationTracker[ConversationID].EndTime = DateTime.Now;
+                       // ConversationTracker[ConversationID].OrderStatus = "OrderCompleted";
+                       // ConversationTracker[ConversationID].EndTime = DateTime.Now;
 
                     }
 
