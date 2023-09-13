@@ -1,0 +1,57 @@
+{
+  "idShort": "SimpleAAS",
+  "identification": {
+    "id": "urn:org.eclipse.basyx:shells:SimpleAAS:1.0.0",
+    "idType": "IRI"
+  },
+  "administration": {
+    "version": "1.0",
+    "revision": "120"
+  },
+  "description": [
+    {
+      "language": "de-DE",
+      "text": "Einfache VWS"
+    },
+    {
+      "language": "en-US",
+      "text": "Simple AAS"
+    }
+  ],
+  "endpoints": [
+    {
+      "address": "http://localhost:5111/aas",
+      "type": "http"
+    },
+    {
+      "address": "https://localhost:5411/aas",
+      "type": "https"
+    }
+  ],
+  "modelType": {
+    "name": "AssetAdministrationShellDescriptor"
+  },
+  "asset": {
+    "idShort": "SimpleAsset",
+    "kind": "Instance",
+    "embeddedDataSpecifications": [],
+    "modelType": {
+      "name": "Asset"
+    },
+    "identification": {
+      "id": "urn:org.eclipse.basyx:assets:SimpleAsset:1.0.0",
+      "idType": "IRI"
+    },
+    "description": [
+      {
+        "language": "de-DE",
+        "text": "Einfaches Asset"
+      },
+      {
+        "language": "en-US",
+        "text": "Simple Asset"
+      }
+    ]
+  },
+  "submodels": []
+}

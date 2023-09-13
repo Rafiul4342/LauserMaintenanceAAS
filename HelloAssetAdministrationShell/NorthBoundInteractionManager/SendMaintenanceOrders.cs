@@ -116,18 +116,18 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderCompleted");
             ConversationTracker[ConversationID].EndTime = DateTime.Now;
             ConversationTracker[ConversationID].OrderStatus = "OrderCompleted";
-            actions.UpdateMaintenanceHistoryCount(ConversationTracker[ConversationID].MaintenanceType);
-          
-
+            
+            var res =actions.UpdateMaintenanceHistoryCount(ConversationTracker[ConversationID].MaintenanceType);
+            if (res == true)
+            {
+                actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType,"Default");
+                
+            }
+            else
+            {
+                Console.WriteLine("Failed to return");
+            }
             //logic to create I.40 Respond message
-
-           
-           
-
-          
-
-
-
         }
 
         [Obsolete]

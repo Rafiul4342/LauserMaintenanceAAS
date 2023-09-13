@@ -156,21 +156,14 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             }*/
 
         }
-        public void UpdateMaintenanceHistoryCount(string MaintenanceType)
+        public bool UpdateMaintenanceHistoryCount(string MaintenanceType)
         {
             var Currentrecord = _client.RetrieveSubmodelElementValue("MaintenanceSubmodel",
                 string.Concat(MaintenanceType, "/", "MaintenanceHistory", "/", "MaintenanceCounter"));
             var updateRecord =Convert.ToInt64(Currentrecord.Entity.Value) + 1;
             IValue updatedValue = new ElementValue(updateRecord, typeof(int));
             var updated = _client.UpdateSubmodelElementValue("MaintenanceSubmodel", string.Concat(MaintenanceType, "/", "MaintenanceHistory","/","MaintenanceCounter"), updatedValue);
-            if (updated.Success)
-            {
-                Console.WriteLine("Record Update Successfully");
-            }
-            else 
-            {
-                Console.WriteLine("Unable to update record");
-            }
+            return updated.Success;
         }
 
 

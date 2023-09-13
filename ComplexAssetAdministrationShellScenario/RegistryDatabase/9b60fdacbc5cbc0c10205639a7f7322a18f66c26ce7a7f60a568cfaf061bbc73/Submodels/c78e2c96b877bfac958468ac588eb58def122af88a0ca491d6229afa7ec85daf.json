@@ -1,0 +1,20 @@
+{
+  "idShort": "TestSubmodel",
+  "identification": {
+    "id": "urn:org.eclipse.basyx:submodels:TestSubmodel:1.0.0",
+    "idType": "IRI"
+  },
+  "endpoints": [
+    {
+      "address": "http://127.0.0.1:5999/shells/MultiAAS_2/aas/submodels/TestSubmodel/submodel",
+      "type": "http"
+    },
+    {
+      "address": "https://127.0.0.1:5499/shells/MultiAAS_2/aas/submodels/TestSubmodel/submodel",
+      "type": "https"
+    }
+  ],
+  "modelType": {
+    "name": "SubmodelDescriptor"
+  }
+}

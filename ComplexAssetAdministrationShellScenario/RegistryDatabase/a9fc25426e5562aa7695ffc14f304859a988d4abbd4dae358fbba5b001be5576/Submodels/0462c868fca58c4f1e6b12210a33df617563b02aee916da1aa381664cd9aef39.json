@@ -1,0 +1,34 @@
+{
+  "idShort": "MultiSubmodel_0",
+  "identification": {
+    "id": "urn:org.eclipse.basyx:submodels:MultiSubmodel_0:1.0.0",
+    "idType": "IRI"
+  },
+  "administration": {
+    "version": "1.0",
+    "revision": "120"
+  },
+  "description": [
+    {
+      "language": "de",
+      "text": "0. Teilmodell"
+    },
+    {
+      "language": "en",
+      "text": "0. Submodel"
+    }
+  ],
+  "endpoints": [
+    {
+      "address": "http://127.0.0.1:6999/submodels/MultiSubmodel_0/submodel",
+      "type": "http"
+    },
+    {
+      "address": "https://127.0.0.1:6499/submodels/MultiSubmodel_0/submodel",
+      "type": "https"
+    }
+  ],
+  "modelType": {
+    "name": "SubmodelDescriptor"
+  }
+}

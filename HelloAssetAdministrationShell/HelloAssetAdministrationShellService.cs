@@ -225,7 +225,7 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                    new Property<string>("ActualOrderStatus"),
+                                    new Property<string>("ActualOrderStatus","Default"),
                                     new BasicEvent("MaintenanceOrderCompetionEvent")
                                     {
 

@@ -1,0 +1,57 @@
+{
+  "idShort": "MultiAAS_1",
+  "identification": {
+    "id": "urn:org.eclipse.basyx:shells:MultiAAS_1:1.0.0",
+    "idType": "IRI"
+  },
+  "administration": {
+    "version": "1.0",
+    "revision": "120"
+  },
+  "description": [
+    {
+      "language": "de",
+      "text": "1. VWS"
+    },
+    {
+      "language": "en",
+      "text": "1. AAS"
+    }
+  ],
+  "endpoints": [
+    {
+      "address": "http://127.0.0.1:5999/shells/MultiAAS_1/aas",
+      "type": "http"
+    },
+    {
+      "address": "https://127.0.0.1:5499/shells/MultiAAS_1/aas",
+      "type": "https"
+    }
+  ],
+  "modelType": {
+    "name": "AssetAdministrationShellDescriptor"
+  },
+  "asset": {
+    "idShort": "Asset_1",
+    "kind": "Instance",
+    "embeddedDataSpecifications": [],
+    "modelType": {
+      "name": "Asset"
+    },
+    "identification": {
+      "id": "urn:org.eclipse.basyx:assets:Asset_1:1.0.0",
+      "idType": "IRI"
+    },
+    "description": [
+      {
+        "language": "de",
+        "text": "1. Asset"
+      },
+      {
+        "language": "en",
+        "text": "1. Asset"
+      }
+    ]
+  },
+  "submodels": []
+}
