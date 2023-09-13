@@ -191,6 +191,7 @@ namespace HelloAssetAdministrationShell
 
             Submodel maintenanceSubmodel = new Submodel("MaintenanceSubmodel", new BaSyxSubmodelIdentifier("MaintenanceSubmodel", "1.0.0"))
             {
+                
                 Description = new LangStringSet() { new LangString("en", "This is a draft maintenancesubmodel_for_preventive_maintenance") },
                 Kind = ModelingKind.Instance,
                 SemanticId = new Reference(new GlobalKey(KeyElements.Submodel, KeyType.IRI, "urn:basys:org.eclipse.basyx:submodels:maintenancesubmodel:1.0.0"))
@@ -211,6 +212,7 @@ namespace HelloAssetAdministrationShell
 
                             new SubmodelElementCollection("MaintenanceOrderDescription")
                             {
+                               
                                 Value =
                                 {
                                     new Property<string>("MaintenanceElement","DMU80eVo1"),

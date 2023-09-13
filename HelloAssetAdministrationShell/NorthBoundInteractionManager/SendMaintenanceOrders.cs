@@ -106,15 +106,18 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
           
             var Ie = actions.GetUpDatedRecord(ConversationTracker[ConversationID].MaintenanceType);
             
-            I40Message mess = new I40Message();
-            mess.interactionElements = Ie;
+            I40Message mes = new I40Message();
+            mes.interactionElements = Ie;
             var frame = CreateFrame.GetFrame(ConversationID, 4, "process",senderAAS);
-            mess.SetInteractionElement(Ie);
-            mess.Setframe(frame);
+            mes.SetInteractionElement(Ie);
+            mes.Setframe(frame);
+            
+            await mqttclient.PublishAsync(PublishTopic, mes);
             actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderCompleted");
             ConversationTracker[ConversationID].EndTime = DateTime.Now;
             ConversationTracker[ConversationID].OrderStatus = "OrderCompleted";
-            await mqttclient.PublishAsync(PublishTopic, mess);
+            actions.UpdateMaintenanceHistoryCount(ConversationTracker[ConversationID].MaintenanceType);
+          
 
             //logic to create I.40 Respond message
 
