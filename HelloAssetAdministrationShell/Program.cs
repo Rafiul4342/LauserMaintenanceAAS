@@ -15,13 +15,8 @@ using BaSyx.Common.UI.Swagger;
 using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings.Types;
 using HelloAssetAdministrationShell.MqttConnection;
-using HelloAssetAdministrationShell.Services;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Web;
-using HelloAssetAdministrationShell.I40MessageExtension;
 using System.Threading.Tasks;
 using System.Text;
 using System;
@@ -31,10 +26,12 @@ using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using Newtonsoft.Json;
 using BaSyx.Models.Core.AssetAdministrationShell.Generics;
 using System.Collections.Generic;
+using System.IO;
 using BaSyx.Models.Core.Common;
 using BaSyx.Models.Extensions;
 using System.Linq;
 using HelloAssetAdministrationShell.NorthBoundInteractionManager;
+using Microsoft.Extensions.Configuration;
 
 namespace HelloAssetAdministrationShell
 {
@@ -44,6 +41,8 @@ namespace HelloAssetAdministrationShell
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         public static object I40MessageExtension { get; private set; }
+        
+        public static IConfiguration Configuration { get; private set; }
         
         public static string url = "http://localhost:5180";
 
@@ -122,6 +121,18 @@ namespace HelloAssetAdministrationShell
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
           //  string url = "http://localhost:5180";
             Console.WriteLine("this is a new program");
+     
+            // to set up enviornmental variables use the following code
+                   Configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables() // Allows overriding settings with environment variables
+                .Build();
+     
+            string mqttBrokerAddress = Configuration["MQTT_BROKER_ADDRESS"];
+            Console.WriteLine(mqttBrokerAddress);
+            //string mqttBrokerPort = configuration["MQTT_BROKER_PORT"];
+
             List<string>ListofMaintenanceInterval = new List<string>();
             Dictionary<String, int> MaintenanceConfiguration = new Dictionary<string, int>();
           

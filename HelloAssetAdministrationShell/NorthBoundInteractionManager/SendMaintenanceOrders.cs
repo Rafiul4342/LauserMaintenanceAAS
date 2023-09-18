@@ -45,7 +45,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
            
             for (int retry = 0; retry < 5;  retry++)
             {
-                await Task.Delay(1000000);
+                await Task.Delay(5000);
                 
                 if (SendMaintenanceOrders.ConversationTracker.ContainsKey(ConID) && SendMaintenanceOrders.ConversationTracker[ConID].OrderStatus == "OrderRequestOnProcess")
                 {
