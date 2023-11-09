@@ -108,7 +108,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             
             I40Message mes = new I40Message();
             mes.interactionElements = Ie;
-            var frame = CreateFrame.GetFrame(ConversationID, 4, "process",senderAAS);
+            var frame = CreateFrame.GetFrame(ConversationID, 4, "PROCESS",senderAAS);
             mes.SetInteractionElement(Ie);
             mes.Setframe(frame);
             
@@ -153,7 +153,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 message.interactionElements = interactionElement;
                 string ConversationID = "DMU80eVo1"+ e.Maintenancetype +"::"+ myMaintenceCounter[e.Maintenancetype].ToString(); 
                 Console.WriteLine(ConversationID);
-                var frame = CreateFrame.GetFrame(ConversationID, 1, "notify_init",senderAAS);
+                var frame = CreateFrame.GetFrame(ConversationID, 1, "NOTIFY_INIT", senderAAS);
                 message.Setframe(frame);
                 ConversationTracker.Add(ConversationID, value: new ConversationInfo { MaintenanceType = e.Maintenancetype, ID= senderAAS, OrderStatus = "OrderSubmitted", StartTime = DateTime.Now });
                 var result = mqttclient.PublishAsync(PublishTopic, message);
@@ -261,15 +261,15 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 else if(Receiver == senderAAS && ConversationTracker.ContainsKey(ConversationID))
                 {
                     var state = ConversationTracker[ConversationID].OrderStatus;
-                    if (MessageType == "notify_accepted" && state == "OrderSubmitted")
+                    if (MessageType == "NOTIFY_ACCEPTED" && state == "OrderSubmitted")
                     {
                         HandleNotify_accepted(datadeserialize);
                     }
-                    else if (MessageType == "notify_accepted" && state == "OrderRequestOnProcess")
+                    else if (MessageType == "NOTIFY_ACCEPTED" && state == "OrderRequestOnProcess")
                     {
                         Console.WriteLine("Following Message Already Processed");
                     }
-                    else if (MessageType == "change" && state == "OrderRequestOnProcess")
+                    else if (MessageType == "CHANGE" && state == "OrderRequestOnProcess")
                     {
                         Handle_Change(datadeserialize);
                     //    actions.UpdateMaintenanceCounter(ConversationTracker[ConversationID].MaintenanceType);
@@ -284,7 +284,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
                     }
 
-                    else if (MessageType == "change" && state == "OrderCompleted")
+                    else if (MessageType == "CHANGE" && state == "OrderCompleted")
                     {
                         Console.WriteLine($"maintenceLifecycle already Compleated with history {0}",ConversationTracker[ConversationID].ToString());
                     }

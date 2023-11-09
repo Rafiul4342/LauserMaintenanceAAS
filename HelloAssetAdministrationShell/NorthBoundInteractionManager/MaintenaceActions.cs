@@ -84,29 +84,63 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 
             //  dynamic jsonObject = JsonSerializer.Deserialize<dynamic>(Ie);
             var d = Ie[0];
-            var I = d.Value;
-           
-                var collection = JsonConvert.DeserializeObject<SubmodelElementCollection>(I);
-                Console.WriteLine(collection);
-          
-           
+            // SubmodelElementCollection submodelElementCollection = JsonConvert.DeserializeObject<SubmodelElementCollection>(d);
+            var I = d.value;
 
-            foreach (var VARIABLE in collection)
+            foreach (var VARIABLE in I)
             {
-                    var id = VARIABLE.IdShort;
-                    IValue value = new ElementValue(VARIABLE.Value,VARIABLE.ValueType);
+                var id = VARIABLE["idShort"];
+                var value = VARIABLE["value"];
+                var type = VARIABLE["valueType"];
+
+                try
+                {
+                    IValue Value = new ElementValue(value);
+                    var updatedvalue = _client.UpdateSubmodelElementValue("MaintenanceSubmodel",
+                        string.Concat(SendMaintenanceOrders.ConversationTracker[ConversationID].MaintenanceType,
+                            "/", "MaintenanceRecord/",
+                            id.ToString()),
+                        Value);
+                    if (updatedvalue.Success)
+                    {
+                        Console.WriteLine($"Record is updated with idShort :{0} Value : {1}", VARIABLE.idShort,
+                            VARIABLE.value);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Value is not updated");
+                    }
+                    
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
+
+/*
+            foreach (var VARIABLE in I)
+            {
+                foreach (var VARIABLE in COLLECTION)
+                {
+                    
+                }
+                var id = VARIABLE["idShort"];
+                IValue value = new ElementValue(VARIABLE["value"],
+                    VARIABLE["valueType"]);
                     try
                     {
                         var updatedvalue = _client.UpdateSubmodelElementValue("MaintenanceSubmodel",
                             string.Concat(SendMaintenanceOrders.ConversationTracker[ConversationID].MaintenanceType,
                                 "/", "MaintenanceRecord/",
-                                VARIABLE.IdShort.ToString()),
+                                id.ToString()),
                             value);
 
                         if (updatedvalue.Success)
                         {
-                            Console.WriteLine($"Record is updated with idShort :{0} Value : {1}", VARIABLE.IdShort,
-                                VARIABLE.Value);
+                            Console.WriteLine($"Record is updated with idShort :{0} Value : {1}", VARIABLE.idShort,
+                                VARIABLE.value);
                         }
                         else
                         {
@@ -116,7 +150,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                     catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
-                    }
+                    }*/
             }
        
             
@@ -155,7 +189,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 }
             }*/
 
-        }
+        
         public bool UpdateMaintenanceHistoryCount(string MaintenanceType)
         {
             var Currentrecord = _client.RetrieveSubmodelElementValue("MaintenanceSubmodel",

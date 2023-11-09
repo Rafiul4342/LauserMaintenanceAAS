@@ -45,6 +45,13 @@ namespace HelloAssetAdministrationShell
         public static IConfiguration Configuration { get; private set; }
         
         public static string url = "http://localhost:5180";
+        
+       
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddEnvironmentVariables() // Add this line to load values from environment variables
+            .Build();
+
 
         [Obsolete]
         private static async Task InitializeAsync()
@@ -60,27 +67,32 @@ namespace HelloAssetAdministrationShell
             // server.WebHostBuilder.ConfigureServices(Services => { Services.AddSinglton<GetDataService>(); });
             // additional service Registration
 
-
+            var mqtt = Configuration["MQTT_BROKER_ADDRESS"];
+            Console.WriteLine(mqtt);
 
             //Instantiate Asset Administration Shell Service
             HelloAssetAdministrationShellService shellService = new HelloAssetAdministrationShellService();
-
+            
             //    server.WebHostBuilder.ConfigureServices(services => { services.AddHostedService<GetDataService>(); });
             //Dictate Asset Administration Shell service to use provided endpoints from the server configuration
             shellService.UseAutoEndpointRegistration(serverSettings.ServerConfig);
             //  WebHostBuilder webHostBuilder = new WebHostBuilder();
-
+            
+            
 
             //Assign Asset Administration Shell Service to the generic HTTP-REST interface
             server.SetServiceProvider(shellService);
 
+            
+            
+            
             //Add Swagger documentation and UI
             server.AddSwagger(Interface.AssetAdministrationShell);
 
             //Add BaSyx Web UI
             server.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
             server.AddBaSyxUI("DashBoard");
-            string ClinetID = "test01";
+            string ClinetID = "test00000001";
             string Subscriptiontopic = "aas-notification";
             string publishTopic = "BasyxMesAASOrderHandling";
             MqttClientFunction cl = new MqttClientFunction();
@@ -109,9 +121,10 @@ namespace HelloAssetAdministrationShell
                 //Stop mDNS discovery thread
                 shellService.StopDiscovery();
             };
+            
+           
 
             await server.RunAsync();
-
 
         }
 

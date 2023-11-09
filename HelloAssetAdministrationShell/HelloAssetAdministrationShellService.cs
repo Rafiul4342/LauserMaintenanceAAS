@@ -215,7 +215,7 @@ namespace HelloAssetAdministrationShell
                                
                                 Value =
                                 {
-                                    new Property<string>("MaintenanceElement","DMU80eVo1"),
+                                    new Property<string>("MaintenanceElement","DMU80eVo"),
                                     new Property<int>("MaintenanceThreshold",250),
                                     new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
@@ -241,8 +241,7 @@ namespace HelloAssetAdministrationShell
                                     new Property<DateTime>("ActualMaintenanceStart"),
                                     new Property<DateTime>("ActualMaintenanceEnd"),
                                     new Property<double>("MaintenanceCompletionTime"),
-                                    new Property<string>("MaintenanceStaff"),
-                                    new Property<double> ( "MaintenanceCost")
+                                    new Property<double>("MaintenanceCosts")
                                 }
                             },
                     new SubmodelElementCollection("MaintenanceHistory")
@@ -274,7 +273,7 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                    new Property<string>("MaintenanceElement","DMU80eVo1"),
+                                    new Property<string>("MaintenanceElement","DMU80eVo"),
                                     new Property<int>("MaintenanceThreshold",500),
                                     new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
@@ -299,9 +298,8 @@ namespace HelloAssetAdministrationShell
                                    new Property<DateTime>("PlannedMaintenanceEnd"),
                                    new Property<DateTime>("ActualMaintenanceStart"),
                                    new Property<DateTime>("ActualMaintenanceEnd"),
-                                    new Property<double>("MaintenanceCompletionTime"),
-                                    new Property<string>("MaintenanceStaff"),
-                                    new Property<double> ( "MaintenanceCost")
+                                   new Property<double>("MaintenanceCompletionTime"),
+                                   new Property<double>("MaintenanceCosts")
                                 }
                             },
                     new SubmodelElementCollection("MaintenanceHistory")
@@ -332,7 +330,7 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                    new Property<string>("MaintenanceElement","DMU80eVo1"),
+                                    new Property<string>("MaintenanceElement","DMU80eVo"),
                                     new Property<int>("MaintenanceThreshold",1000),
                                     new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
@@ -358,8 +356,8 @@ namespace HelloAssetAdministrationShell
                                     new Property<DateTime>("ActualMaintenanceStart"),
                                     new Property<DateTime>("ActualMaintenanceEnd"),
                                     new Property<double>("MaintenanceCompletionTime"),
-                                    new Property<string>("MaintenanceStaff"),
-                                    new Property<double> ( "MaintenanceCost")
+                                    new Property<double>("MaintenanceCosts")
+                                  
                                 }
                             },
                     new SubmodelElementCollection("MaintenanceHistory")
