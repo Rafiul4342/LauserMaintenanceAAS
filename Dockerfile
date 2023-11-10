@@ -2,9 +2,10 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
 WORKDIR /app
-EXPOSE 80
-ENV ASPNETCORE_URLS=http://+:80
-#ENV ASPNETCORE_URLS=http://+:5180
+EXPOSE 5000
+EXPOSE 5001
+EXPOSE 5180
+ENV ASPNETCORE_URLS=http://+:5000;https://+:5001;http://+:5180
 
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
