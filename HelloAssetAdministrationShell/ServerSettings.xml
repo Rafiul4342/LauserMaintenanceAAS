@@ -5,8 +5,7 @@
       <Environment>Development</Environment>
       <ContentPath>Content</ContentPath>
       <Urls>
-        <Url>http://localhost:5180</Url>
-     
+        <Url>http://+:5180</Url>
       </Urls>
     </Hosting>
     <DefaultRoute/>
