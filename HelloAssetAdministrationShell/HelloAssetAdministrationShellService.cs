@@ -215,7 +215,7 @@ namespace HelloAssetAdministrationShell
                                
                                 Value =
                                 {
-                                    new Property<string>("MaintenanceElement","DMU80eVo"),
+                                    new Property<string>("MaintenanceElement","DMU80"),
                                     new Property<int>("MaintenanceThreshold",250),
                                     new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
@@ -273,7 +273,7 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                    new Property<string>("MaintenanceElement","DMU80eVo"),
+                                    new Property<string>("MaintenanceElement","DMU80"),
                                     new Property<int>("MaintenanceThreshold",500),
                                     new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
@@ -330,7 +330,7 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                    new Property<string>("MaintenanceElement","DMU80eVo"),
+                                    new Property<string>("MaintenanceElement","DMU80"),
                                     new Property<int>("MaintenanceThreshold",1000),
                                     new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")

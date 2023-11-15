@@ -2,9 +2,10 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
 WORKDIR /app
-EXPOSE 80
-ENV ASPNETCORE_URLS=http://+:80
-#ENV ASPNETCORE_URLS=http://+:5180
+EXPOSE 5000
+EXPOSE 5001
+EXPOSE 5180
+ENV ASPNETCORE_URLS=http://+:5000;https://+:5001;http://+:5180
 
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
@@ -21,4 +22,17 @@ RUN dotnet publish "HelloAssetAdministrationShell.csproj" -c Release -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+ENV MQTTSOUTHBOUND_BROKERADDRESS="test.mosquitto.org"
+ENV MQTTSOUTHBOUND_PORT=1883
+ENV MQTTSOUTHBOUND_SUBSCRIPTIONTOPIC="DMU80eVo"
+
+ENV MQTTNORTHBOUND_BROKERADDRESS="test.mosquitto.org"
+ENV MQTTNORTHBOUND_PORT=1883
+ENV MQTTNORTHBOUND_SUBSCRIPTIONTOPIC="aas-notification"
+ENV MQTTNORTHBOUND_PUBLICATIONTOPIC="BasyxMesAASOrderHandling"
+
+
+
+
 ENTRYPOINT ["dotnet", "HelloAssetAdministrationShell.dll"]

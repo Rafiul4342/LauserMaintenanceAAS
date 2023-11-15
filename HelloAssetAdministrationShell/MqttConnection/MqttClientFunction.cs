@@ -23,6 +23,8 @@ using File = System.IO.File;
 using System.Net.Http;
 using System.Text.Json;
 using HelloAssetAdministrationShell.MqttConnection.TimeMapper;
+using Microsoft.Extensions.Configuration;
+
 namespace HelloAssetAdministrationShell.MqttConnection
 {
     public class MqttClientFunction
@@ -41,10 +43,11 @@ namespace HelloAssetAdministrationShell.MqttConnection
         private readonly SecondsConverter _secondconverter;
 
 
-        public MqttClientFunction()
+        public MqttClientFunction(string brokerAddress, int port,string topicSubscribe)
         {
+            
             // create client instance 
-            client = new MqttClient("test.mosquitto.org", 1883, false, null, null, MqttSslProtocols.None);
+            client = new MqttClient(brokerAddress, port, false, null, null, MqttSslProtocols.None);
             // register to message received 
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
             //client.Connect(Guid.NewGuid().ToString(), settings.UserName, settings.Password);
@@ -52,7 +55,7 @@ namespace HelloAssetAdministrationShell.MqttConnection
             client.Connect(clientId);
 
             // subscribe to the topic "MacnineData/ID-0000" with QoS 2 
-            client.Subscribe(new string[] { "DMU80eVo" }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
+            client.Subscribe(new string[] {topicSubscribe}, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
             
         }
 
@@ -100,7 +103,7 @@ namespace HelloAssetAdministrationShell.MqttConnection
                 {
                     try
                     {
-                        var counterVal_1 = await client.GetAsync("http://172.18.160.1:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_1/MaintenanceDetails/OperatingHours/value");
+                        var counterVal_1 = await client.GetAsync("http://localhost:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_1/MaintenanceDetails/OperatingHours/value");
                         if (counterVal_1.IsSuccessStatusCode)
                         {
                             string CurrentCounterValue_1 = await counterVal_1.Content.ReadAsStringAsync();
@@ -114,7 +117,7 @@ namespace HelloAssetAdministrationShell.MqttConnection
 
                             Console.WriteLine(incV_1);
                             string counterupdate_1 = JsonConvert.SerializeObject(incV_1);
-                            var update_1 = await client.PutAsync("http://172.18.160.1:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_1/MaintenanceDetails/OperatingHours/value", new StringContent(counterupdate_1,
+                            var update_1 = await client.PutAsync("http://localhost:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_1/MaintenanceDetails/OperatingHours/value", new StringContent(counterupdate_1,
                                    Encoding.UTF8, "application/json"));
                             Console.WriteLine("Counter_1_valueUpdated");
                         } 
@@ -126,7 +129,7 @@ namespace HelloAssetAdministrationShell.MqttConnection
 
                     try
                     {
-                        var counterVal_2 = await client.GetAsync("http://172.18.160.1:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_2/MaintenanceDetails/OperatingHours/value");
+                        var counterVal_2 = await client.GetAsync("http://localhost:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_2/MaintenanceDetails/OperatingHours/value");
 
                         if (counterVal_2.IsSuccessStatusCode)
                         {
@@ -139,7 +142,7 @@ namespace HelloAssetAdministrationShell.MqttConnection
                         string incCV_2 = _secondsConverter.incrementedtimeformatter(cv_2);
                             string counterupdate_2 =  (incCV_2);
 
-                            var update = await client.PutAsync("http://172.18.160.1:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_2/MaintenanceDetails/OperatingHours/value", new StringContent(counterupdate_2,
+                            var update = await client.PutAsync("http://localhost:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_2/MaintenanceDetails/OperatingHours/value", new StringContent(counterupdate_2,
                                    Encoding.UTF8, "application/json"));
                             Console.WriteLine("Counter_2_valueUpdated");
                         }
@@ -152,7 +155,7 @@ namespace HelloAssetAdministrationShell.MqttConnection
 
                     try
                     {
-                        var counterVal_3 = await client.GetAsync("http://172.18.160.1:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_3/MaintenanceDetails/OperatingHours/value");
+                        var counterVal_3 = await client.GetAsync("http://localhost:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_3/MaintenanceDetails/OperatingHours/value");
 
                         if (counterVal_3.IsSuccessStatusCode)
                         {
@@ -166,7 +169,7 @@ namespace HelloAssetAdministrationShell.MqttConnection
                             Console.WriteLine(cv_3);
                         string incCv_3 = _secondsConverter.incrementedtimeformatter(cv_3);
                             string counterupdate_3 = JsonConvert.SerializeObject(incCv_3);
-                            var update = await client.PutAsync("http://172.18.160.1:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_3/MaintenanceDetails/OperatingHours/value", new StringContent(counterupdate_3,
+                            var update = await client.PutAsync("http://localhost:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_3/MaintenanceDetails/OperatingHours/value", new StringContent(counterupdate_3,
                                    Encoding.UTF8, "application/json"));
                             Console.WriteLine("Counter_3_valueUpdated");
                         }

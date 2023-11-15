@@ -32,6 +32,7 @@ using BaSyx.Models.Extensions;
 using System.Linq;
 using HelloAssetAdministrationShell.NorthBoundInteractionManager;
 using Microsoft.Extensions.Configuration;
+using  HelloAssetAdministrationShell.Setting;
 
 namespace HelloAssetAdministrationShell
 {
@@ -42,16 +43,18 @@ namespace HelloAssetAdministrationShell
 
         public static object I40MessageExtension { get; private set; }
         
-        public static IConfiguration Configuration { get; private set; }
+     //   public static IConfiguration Configuration { get; private set; }
+        public static IConfiguration Configuration { get; set; }
         
         public static string url = "http://localhost:5180";
         
-       
-        IConfiguration configuration = new ConfigurationBuilder()
+        
+       /* IConfiguration Configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddEnvironmentVariables() // Add this line to load values from environment variables
             .Build();
-
+            */
+        
 
         [Obsolete]
         private static async Task InitializeAsync()
@@ -67,8 +70,8 @@ namespace HelloAssetAdministrationShell
             // server.WebHostBuilder.ConfigureServices(Services => { Services.AddSinglton<GetDataService>(); });
             // additional service Registration
 
-            var mqtt = Configuration["MQTT_BROKER_ADDRESS"];
-            Console.WriteLine(mqtt);
+         //   var mqtt = Configuration["MQTT_BROKER_ADDRESS"];
+           // Console.WriteLine(mqtt);
 
             //Instantiate Asset Administration Shell Service
             HelloAssetAdministrationShellService shellService = new HelloAssetAdministrationShellService();
@@ -92,12 +95,27 @@ namespace HelloAssetAdministrationShell
             //Add BaSyx Web UI
             server.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
             server.AddBaSyxUI("DashBoard");
-            string ClinetID = "test00000001";
-            string Subscriptiontopic = "aas-notification";
-            string publishTopic = "BasyxMesAASOrderHandling";
-            MqttClientFunction cl = new MqttClientFunction();
+            string ClinetID = Guid.NewGuid().ToString();
+         //   string Subscriptiontopic = "aas-notification";
+           // string publishTopic = "BasyxMesAASOrderHandling";
+            var mqttSouthBoundConfig = new MqttSouthBound()
+            {
+                BrokerAddress = Environment.GetEnvironmentVariable("MQTTSOUTHBOUND_BROKERADDRESS") ?? Configuration["MqttSouthBound:BrokerAddress"],
+                Port = int.Parse(Environment.GetEnvironmentVariable("MQTTSOUTHBOUND_PORT") ?? Configuration["MqttSouthBound:Port"]),
+                SubscriptionTopic = Environment.GetEnvironmentVariable("MQTTSOUTHBOUND_SUBSCRIPTIONTOPIC") ?? Configuration["MqttSouthBound:SubscriptionTopic"]
+            };
+            var mqttNorthBoundConfig = new MqttNorthBound()
+            {
+                BrokerAddress = Environment.GetEnvironmentVariable("MQTTNORTHBOUND_BROKERADDRESS") ?? Configuration["MqttNorthBound:BrokerAddress"],
+                Port = int.Parse(Environment.GetEnvironmentVariable("MQTTNORTHBOUND_PORT") ?? Configuration["MqttNorthBound:Port"]),
+                SubscriptionTopic = Environment.GetEnvironmentVariable("MQTTNORTHBOUND_SUBSCRIPTIONTOPIC") ?? Configuration["MqttNorthBound:SubscriptionTopic"],
+                PublicationTopic = Environment.GetEnvironmentVariable("MQTTNORTHBOUND_PUBLICATIONTOPIC")?? Configuration["MqttNorthBound:PublicationTopic"]                
+            };
+            
+            Console.WriteLine(mqttSouthBoundConfig.BrokerAddress);
+            MqttClientFunction cl = new MqttClientFunction(mqttSouthBoundConfig.BrokerAddress,mqttSouthBoundConfig.Port,mqttSouthBoundConfig.SubscriptionTopic);
             SendMaintenanceOrders order = new SendMaintenanceOrders();
-            order.SendMaintenanceOrders1(ClinetID, "test.mosquitto.org",1883,url,Subscriptiontopic,publishTopic);
+            order.SendMaintenanceOrders1(ClinetID, mqttNorthBoundConfig.BrokerAddress,mqttNorthBoundConfig.Port,url,mqttNorthBoundConfig.SubscriptionTopic,mqttNorthBoundConfig.PublicationTopic);
 
             //  HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper.MqttNorthbound mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org", 1883, ClinetID);
 
@@ -134,8 +152,13 @@ namespace HelloAssetAdministrationShell
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
           //  string url = "http://localhost:5180";
             Console.WriteLine("this is a new program");
+           
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
      
-            // to set up enviornmental variables use the following code
+        /*    // to set up enviornmental variables use the following code
                    Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -145,7 +168,8 @@ namespace HelloAssetAdministrationShell
             string mqttBrokerAddress = Configuration["MQTT_BROKER_ADDRESS"];
             Console.WriteLine(mqttBrokerAddress);
             //string mqttBrokerPort = configuration["MQTT_BROKER_PORT"];
-
+            
+*/
             List<string>ListofMaintenanceInterval = new List<string>();
             Dictionary<String, int> MaintenanceConfiguration = new Dictionary<string, int>();
           
@@ -166,13 +190,13 @@ namespace HelloAssetAdministrationShell
                     tasks.Add(task);
                 }
 
-                await Task.Run(async () =>
-                    {
+                await Task.Run(async () => 
+                    { 
                         while (true)
-                         {
-                         await Task.WhenAll(tasks);
-                         await Task.Delay(TimeSpan.FromSeconds(60));
-                        }
+                            {
+                                await Task.WhenAll(tasks);
+                                await Task.Delay(TimeSpan.FromSeconds(60));
+                            }
                      }
                );
                // await MaintenceEventGenerator.Eventmonitoring(url);

@@ -27,7 +27,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
         public static string ConvessationID;
 
-        public static string senderAAS = "BASYX_MACHINE_AAS_1";
+        public static string senderAAS = "BASYX_MACHINE_AAS_1"+Guid.NewGuid().ToString();
 
         public static Dictionary<string, int> myMaintenceCounter = new Dictionary<string, int>();
         
@@ -36,7 +36,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         public static Dictionary<string, ConversationInfo> ConversationTracker = new Dictionary<string, ConversationInfo>();
         public MaintenaceActions actions;
 
-        public IEnumerable<object> IEvalue { get; private set; }
+      
 
         [Obsolete]
         public async Task RetryPolicy(I40Message mes, string ConID,string topic)
@@ -146,12 +146,12 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
                 }
                 else if (!myMaintenceCounter.ContainsKey(e.Maintenancetype)) {
-                    myMaintenceCounter.Add(e.Maintenancetype, 1);
+                    myMaintenceCounter.Add(e.Maintenancetype, 1000);
                 };
                 I40Message message = new I40Message();
                 var interactionElement =await RetreiveInteractionElement.GetInteractionElement(url, e.Maintenancetype);
                 message.interactionElements = interactionElement;
-                string ConversationID = "DMU80eVo1"+ e.Maintenancetype +"::"+ myMaintenceCounter[e.Maintenancetype].ToString(); 
+                string ConversationID = "DMU80"+ e.Maintenancetype +"::"+ myMaintenceCounter[e.Maintenancetype].ToString(); 
                 Console.WriteLine(ConversationID);
                 var frame = CreateFrame.GetFrame(ConversationID, 1, "NOTIFY_INIT", senderAAS);
                 message.Setframe(frame);
