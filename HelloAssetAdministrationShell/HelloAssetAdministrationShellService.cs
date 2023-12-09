@@ -241,6 +241,7 @@ namespace HelloAssetAdministrationShell
                                     new Property<DateTime>("ActualMaintenanceStart"),
                                     new Property<DateTime>("ActualMaintenanceEnd"),
                                     new Property<double>("MaintenanceCompletionTime"),
+                                    new Property<string>("MaintenanceStaff"),
                                     new Property<double>("MaintenanceCosts")
                                 }
                             },
@@ -294,12 +295,13 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                   new Property<DateTime>("PlannedMaintenanceStart"),
-                                   new Property<DateTime>("PlannedMaintenanceEnd"),
-                                   new Property<DateTime>("ActualMaintenanceStart"),
-                                   new Property<DateTime>("ActualMaintenanceEnd"),
-                                   new Property<double>("MaintenanceCompletionTime"),
-                                   new Property<double>("MaintenanceCosts")
+                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                    new Property<DateTime>("ActualMaintenanceEnd"),
+                                    new Property<double>("MaintenanceCompletionTime"),
+                                    new Property<string>("MaintenanceStaff"),
+                                    new Property<double>("MaintenanceCosts")
                                 }
                             },
                     new SubmodelElementCollection("MaintenanceHistory")
@@ -356,6 +358,7 @@ namespace HelloAssetAdministrationShell
                                     new Property<DateTime>("ActualMaintenanceStart"),
                                     new Property<DateTime>("ActualMaintenanceEnd"),
                                     new Property<double>("MaintenanceCompletionTime"),
+                                    new Property<string>("MaintenanceStaff"),
                                     new Property<double>("MaintenanceCosts")
                                   
                                 }

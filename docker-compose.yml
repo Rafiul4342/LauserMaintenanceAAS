@@ -1,0 +1,62 @@
+﻿version: '3.8'
+
+services:
+  mes_app:
+    image: asset4342/mes-aas:v1
+    container_name: mes_app
+    ports:
+      - "6499:6499"
+      - "6999:6999"
+      - "5499:5499"
+      - "4999:4999"
+      - "5999:5999"
+      - "5411:5411"
+      - "446:443"
+      - "5111:5111"
+      - "5222:5222"
+      - "5422:5422"
+    environment:
+      - ASPNETCORE_URLS=http://+:6999;https://+:6499;http://+:5999;https://+:5499;https://+:443;http://+:5111;https://+:5411
+      - MES_APPLICATION_CONFIG:BROKER_ADDRESS=test.mosquitto.org
+      - MES_APPLICATION_CONFIG:BROKER_PORT=1883
+      - MES_APPLICATION_CONFIG:SUBSCRIPTION_TOPIC=BasyxMesAASOrderHandling
+      - MES_APPLICATION_CONFIG:PUBLICATION_TOPIC=aas-notification
+      - MES_APPLICATION_CONFIG:MES_ENDPOINT=http://host.docker.internal:7486/api/MesOrder
+      - MES_APPLICATION_CONFIG:MES_AAS_ENDPOINT=http://host.docker.internal:5111
+    networks:
+      - myapp_network
+    tty: true
+    stdin_open: true
+
+  dmu80evo:
+    image: asset4342/dmu80evo:v11
+    environment:
+      - MQTTSOUTHBOUND_BROKERADDRESS=test.mosquitto.org
+      - MQTTSOUTHBOUND_PORT=1883
+      - MQTTSOUTHBOUND_SUBSCRIPTIONTOPIC=DMU80eVo
+      - MQTTNORTHBOUND_BROKERADDRESS=test.mosquitto.org
+      - MQTTNORTHBOUND_PORT=1883
+      - MQTTNORTHBOUND_SUBSCRIPTIONTOPIC=aas-notification
+      - MQTTNORTHBOUND_PUBLICATIONTOPIC=BasyxMesAASOrderHandling
+    ports:
+      - "5002:5002"
+      - "5001:5001"
+      - "5180:5180"
+    networks:
+      - myapp_network
+
+  ui:
+    image: ajaykumarnadoda/cncmachineaasdashboardserver
+    ports:
+      - "8000:80"
+    environment:
+      - AASServer_Address=http://141.44.206.182:5180
+    container_name: ui
+    networks:
+      - myapp_network
+    depends_on:
+      - dmu80evo
+
+networks:
+  myapp_network:
+    driver: bridge

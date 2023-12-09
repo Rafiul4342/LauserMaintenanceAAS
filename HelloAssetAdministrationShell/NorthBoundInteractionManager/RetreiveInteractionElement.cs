@@ -12,7 +12,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
     public static class RetreiveInteractionElement
     {
        
-        public static List<SubmodelElementCollection> InteractionElement = new List<SubmodelElementCollection>();
+        public static List<SubmodelElementCollection> InteractionElement ;
       
         public static async Task<List<SubmodelElementCollection>> GetInteractionElement(string url, string MaintencaceType)
         {
@@ -25,8 +25,9 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
             SubmodelElementCollection submodelElementCollection = JsonConvert.DeserializeObject<SubmodelElementCollection>(result1Josn);
 
-            InteractionElement.Insert(0, submodelElementCollection);
-         //   InteractionElement.Add(submodelElementCollection);
+            InteractionElement = new List<SubmodelElementCollection>();
+            
+            InteractionElement.Add(submodelElementCollection);
           
             
             return InteractionElement;

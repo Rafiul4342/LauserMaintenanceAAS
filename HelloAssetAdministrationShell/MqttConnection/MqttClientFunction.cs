@@ -1,4 +1,5 @@
-﻿using BaSyx.Models.Core.AssetAdministrationShell.Generics;
+﻿
+using BaSyx.Models.Core.AssetAdministrationShell.Generics;
 using BaSyx.Models.Core.AssetAdministrationShell.Identification.BaSyx;
 using BaSyx.Models.Core.AssetAdministrationShell.Identification;
 using BaSyx.Models.Core.AssetAdministrationShell;

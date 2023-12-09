@@ -18,7 +18,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
       
         public AssetAdministrationShellHttpClient _client { get; set; }
         public SubmodelElementCollection IValue { get; private set; }
-        public static List<SubmodelElementCollection> InteractionElements = new List<SubmodelElementCollection>();
+        public static List<SubmodelElementCollection> InteractionElements;
         
        public MaintenaceActions(string url)
         {
@@ -34,7 +34,9 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
            {
                var JsonDataRetreived = Record.Entity.ToJson();
                SubmodelElementCollection submodelElementCollection = JsonConvert.DeserializeObject<SubmodelElementCollection>(JsonDataRetreived);
-               InteractionElements.Insert(0, submodelElementCollection);
+               InteractionElements = new List<SubmodelElementCollection>();
+               InteractionElements.Add(submodelElementCollection);
+               
                return InteractionElements;
            }
            else
@@ -95,21 +97,44 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
                 try
                 {
-                    IValue Value = new ElementValue(value);
-                    var updatedvalue = _client.UpdateSubmodelElementValue("MaintenanceSubmodel",
-                        string.Concat(SendMaintenanceOrders.ConversationTracker[ConversationID].MaintenanceType,
-                            "/", "MaintenanceRecord/",
-                            id.ToString()),
-                        Value);
-                    if (updatedvalue.Success)
+                    if (value == null && id == "MaintenanceStaff")
                     {
-                        Console.WriteLine($"Record is updated with idShort :{0} Value : {1}", VARIABLE.idShort,
-                            VARIABLE.value);
+                        value = "MaintenanceStuffNotAssignedYet";
+                        IValue Value = new ElementValue(value);
+                        var updatedvalue = _client.UpdateSubmodelElementValue("MaintenanceSubmodel",
+                            string.Concat(SendMaintenanceOrders.ConversationTracker[ConversationID].MaintenanceType,
+                                "/", "MaintenanceRecord/",
+                                id.ToString()),
+                            Value);
+                        if (updatedvalue.Success)
+                        {
+                            Console.WriteLine($"Record is updated with idShort :{0} Value : {1}", VARIABLE.idShort,
+                                VARIABLE.value);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Value is not updated");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Value is not updated");
+                        IValue Value = new ElementValue(value);
+                        var updatedvalue = _client.UpdateSubmodelElementValue("MaintenanceSubmodel",
+                            string.Concat(SendMaintenanceOrders.ConversationTracker[ConversationID].MaintenanceType,
+                                "/", "MaintenanceRecord/",
+                                id.ToString()),
+                            Value);
+                        if (updatedvalue.Success)
+                        {
+                            Console.WriteLine($"Record is updated with idShort :{0} Value : {1}", VARIABLE.idShort,
+                                VARIABLE.value);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Value is not updated");
+                        }
                     }
+                    
                     
                 }
                 catch (Exception e)
