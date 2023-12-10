@@ -2,7 +2,7 @@
 
 services:
   mes_app:
-    image: asset4342/mes-aas:v1
+    image: asset4342/mesaas:v2
     container_name: mes_app
     ports:
       - "6499:6499"
@@ -21,7 +21,7 @@ services:
       - MES_APPLICATION_CONFIG:BROKER_PORT=1883
       - MES_APPLICATION_CONFIG:SUBSCRIPTION_TOPIC=BasyxMesAASOrderHandling
       - MES_APPLICATION_CONFIG:PUBLICATION_TOPIC=aas-notification
-      - MES_APPLICATION_CONFIG:MES_ENDPOINT=http://host.docker.internal:7486/api/MesOrder
+      - MES_APPLICATION_CONFIG:MES_ENDPOINT=https://bba0-2a0c-d242-4052-8f00-3087-b937-174a-4959.ngrok-free.app/maintenance-request/
       - MES_APPLICATION_CONFIG:MES_AAS_ENDPOINT=http://host.docker.internal:5111
     networks:
       - myapp_network
@@ -29,7 +29,7 @@ services:
     stdin_open: true
 
   dmu80evo:
-    image: asset4342/dmu80evo:v11
+    image: asset4342/dmu80evo:v12
     environment:
       - MQTTSOUTHBOUND_BROKERADDRESS=test.mosquitto.org
       - MQTTSOUTHBOUND_PORT=1883
@@ -50,7 +50,7 @@ services:
     ports:
       - "8000:80"
     environment:
-      - AASServer_Address=http://141.44.206.182:5180
+      - AASServer_Address=http://192.168.0.103:5180
     container_name: ui
     networks:
       - myapp_network

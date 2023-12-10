@@ -13,7 +13,7 @@ namespace HelloAssetAdministrationShell.PersistenceStorage
     public interface IBasyxStorageAPI<T>
     {
        // Creates or updates an object 
-       
+          
         public T CreatOrUpdate(T obj);
        // updates a particular object 
        
