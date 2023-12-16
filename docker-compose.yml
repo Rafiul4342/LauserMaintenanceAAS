@@ -2,7 +2,7 @@
 
 services:
   mes_app:
-    image: asset4342/mesaas:v2
+    image: asset4342/mesaas:v3
     container_name: mes_app
     ports:
       - "6499:6499"
@@ -29,7 +29,7 @@ services:
     stdin_open: true
 
   dmu80evo:
-    image: asset4342/dmu80evo:v12
+    image: asset4342/dmu80evo:v13
     environment:
       - MQTTSOUTHBOUND_BROKERADDRESS=test.mosquitto.org
       - MQTTSOUTHBOUND_PORT=1883
@@ -50,7 +50,7 @@ services:
     ports:
       - "8000:80"
     environment:
-      - AASServer_Address=http://192.168.0.103:5180
+      - AASServer_Address=http://192.168.0.105:5180
     container_name: ui
     networks:
       - myapp_network

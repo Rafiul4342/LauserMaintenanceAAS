@@ -113,7 +113,7 @@ namespace HelloAssetAdministrationShell.MqttConnection
                             Console.WriteLine("The counter value is : {0}", CvC_1);
                             
 
-        int cv_1 = _secondsConverter.ConverCurrenthourstosecond(CvC_1);
+                        int cv_1 = _secondsConverter.ConverCurrenthourstosecond(CvC_1);
                         string incV_1 = _secondsConverter.incrementedtimeformatter(cv_1);
 
                             Console.WriteLine(incV_1);
@@ -141,10 +141,10 @@ namespace HelloAssetAdministrationShell.MqttConnection
                         int cv_2 = _secondsConverter.ConverCurrenthourstosecond(CvC_2);
                             Console.WriteLine(cv_2);
                         string incCV_2 = _secondsConverter.incrementedtimeformatter(cv_2);
-                            string counterupdate_2 =  (incCV_2);
+                            string counterupdate_2 = JsonConvert.SerializeObject(incCV_2);
 
-                            var update = await client.PutAsync("http://localhost:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_2/MaintenanceDetails/OperatingHours/value", new StringContent(counterupdate_2,
-                                   Encoding.UTF8, "application/json"));
+                            var update_2 = await client.PutAsync("http://localhost:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_2/MaintenanceDetails/OperatingHours/value", new StringContent(counterupdate_2,
+                                Encoding.UTF8, "application/json"));
                             Console.WriteLine("Counter_2_valueUpdated");
                         }
                     }
@@ -180,7 +180,32 @@ namespace HelloAssetAdministrationShell.MqttConnection
                     {
                         Console.WriteLine("Server with MaintenceCounter_2: connot be accesssed");
                     }
+                    try
+                    {
+                        var counterVal_4 = await client.GetAsync("http://localhost:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_4/MaintenanceDetails/OperatingHours/value");
 
+                        if (counterVal_4.IsSuccessStatusCode)
+                        {
+                            var CurrentCounterValue_3 = await counterVal_4.Content.ReadAsStringAsync();
+                            Console.WriteLine($"The counter value is : {0}", CurrentCounterValue_3.ToString());
+                            string CvC_3 = CurrentCounterValue_3.ToString().Trim('\"');
+                        
+                            Console.WriteLine(CvC_3);
+                            int cv_3 = _secondsConverter.ConverCurrenthourstosecond(CvC_3);
+
+                            Console.WriteLine(cv_3);
+                            string incCv_3 = _secondsConverter.incrementedtimeformatter(cv_3);
+                            string counterupdate_3 = JsonConvert.SerializeObject(incCv_3);
+                            var update = await client.PutAsync("http://localhost:5180/aas/submodels/MaintenanceSubmodel/submodel/submodelElements/Maintenance_4/MaintenanceDetails/OperatingHours/value", new StringContent(counterupdate_3,
+                                Encoding.UTF8, "application/json"));
+                            Console.WriteLine("Counter_3_valueUpdated");
+                        }
+
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Server with MaintenceCounter_2: connot be accesssed");
+                    }
                 }
             else {
                 Console.WriteLine(Status);

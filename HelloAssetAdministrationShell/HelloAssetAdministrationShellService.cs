@@ -202,7 +202,7 @@ namespace HelloAssetAdministrationShell
                             new SubmodelElementCollection("MaintenanceDetails")
 
                             {
-                                new Property<string>("OperatingHours","00:00:00"),
+                                new Property<string>("OperatingHours","0000:00:00"),
                                 new Property<int>("MaintenanceWarning",200),
                                 new Property<int>("MaintenanceThreshold",5),
                                 new Property<Event>("MaintenanceWarningAlarm"),
@@ -215,7 +215,7 @@ namespace HelloAssetAdministrationShell
                                
                                 Value =
                                 {
-                                    new Property<string>("MaintenanceElement","DMU80"),
+                                    new Property<string>("MaintenanceElement","DMU80eVo"),
                                     new Property<int>("MaintenanceThreshold",250),
                                     new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
@@ -262,7 +262,7 @@ namespace HelloAssetAdministrationShell
                             new SubmodelElementCollection("MaintenanceDetails")
 
                             {
-                                new Property<string>("OperatingHours","00:00:00"),
+                                new Property<string>("OperatingHours","0000:00:00"),
                                 new Property<int>("MaintenanceWarning",400),
                                 new Property<int>("MaintenanceThreshold",10),
                                 new Property<Event>("MaintenanceWarningAlarm"),
@@ -274,7 +274,7 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                    new Property<string>("MaintenanceElement","DMU80"),
+                                    new Property<string>("MaintenanceElement","DMU80eVo"),
                                     new Property<int>("MaintenanceThreshold",500),
                                     new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
@@ -320,7 +320,7 @@ namespace HelloAssetAdministrationShell
                             new SubmodelElementCollection("MaintenanceDetails")
 
                             {
-                                new Property<string>("OperatingHours","00:00:00"),
+                                new Property<string>("OperatingHours","0000:00:00"),
                                 new Property<int>("MaintenanceWarning",800),
                                 new Property<int>("MaintenanceThreshold",15),
                                 new Property<Event>("MaintenanceWarningAlarm"),
@@ -332,7 +332,7 @@ namespace HelloAssetAdministrationShell
                             {
                                 Value =
                                 {
-                                    new Property<string>("MaintenanceElement","DMU80"),
+                                    new Property<string>("MaintenanceElement","DMU80eVo"),
                                     new Property<int>("MaintenanceThreshold",1000),
                                     new Property<string>("MaintenanceCompany","Lauscher"),
                                     new Property<string>("MaintenanceCompanyLocation","Achen")
@@ -373,7 +373,65 @@ namespace HelloAssetAdministrationShell
 
                 }
             });
+             maintenanceSubmodel.SubmodelElements.Add(new SubmodelElementCollection("Maintenance_4")
+            {
+                Value = {
+                            new SubmodelElementCollection("MaintenanceDetails")
 
+                            {
+                                new Property<string>("OperatingHours","0000:00:00"),
+                                new Property<int>("MaintenanceWarning",800),
+                                new Property<int>("MaintenanceThreshold",20),
+                                new Property<Event>("MaintenanceWarningAlarm"),
+                                new Property<Event>("MaintenanceAlarm")
+
+                             },
+
+                            new SubmodelElementCollection("MaintenanceOrderDescription")
+                            {
+                                Value =
+                                {
+                                    new Property<string>("MaintenanceElement","DMU80eVo"),
+                                    new Property<int>("MaintenanceThreshold",2000),
+                                    new Property<string>("MaintenanceCompany","Lauscher"),
+                                    new Property<string>("MaintenanceCompanyLocation","Achen")
+                                }
+                            },
+                             new SubmodelElementCollection("MaintenanceOrderStatus")
+                            {
+                                Value =
+                                {
+                                    new Property<string>("ActualOrderStatus","Default"),
+                                    new BasicEvent("MaintenanceOrderCompetionEvent")
+                                    {
+
+                                    }
+                                }
+                            },
+                              new SubmodelElementCollection("MaintenanceRecord")
+                            {
+                                Value =
+                                {
+                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                    new Property<DateTime>("ActualMaintenanceEnd"),
+                                    new Property<double>("MaintenanceCompletionTime"),
+                                    new Property<string>("MaintenanceStaff"),
+                                    new Property<double>("MaintenanceCosts")
+                                  
+                                }
+                            },
+                    new SubmodelElementCollection("MaintenanceHistory")
+                    {
+                        Value =
+                        {
+                            new Property<int>("MaintenanceCounter",0)
+                        }
+                    }
+
+                }
+            });
 
 
 

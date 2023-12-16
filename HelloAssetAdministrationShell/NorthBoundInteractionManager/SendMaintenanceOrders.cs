@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
+using HelloAssetAdministrationShell.NorthBoundInteractionManager.I40CommunicationPersistence;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -29,11 +30,11 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
         public static string senderAAS = "BASYX_MACHINE_AAS_1"+Guid.NewGuid().ToString();
 
-        public static Dictionary<string, int> myMaintenceCounter = new Dictionary<string, int>();
+        public static Dictionary<string, int> myMaintenceCounter;
         
         private string PublishTopic;
 
-        public static Dictionary<string, ConversationInfo> ConversationTracker = new Dictionary<string, ConversationInfo>();
+        public static Dictionary<string, ConversationInfo> ConversationTracker; 
        
         public MaintenaceActions actions;
 
@@ -69,6 +70,9 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
         public async void SendMaintenanceOrders1(string clinetID, string BrokerAddress, int port, string AASurl, string topic,string publishTopic)
         {
             
+            myMaintenceCounter = InteractionDataStorage.LoadMaintenanceCounter();
+            ConversationTracker = InteractionDataStorage.LoadConversationTracker();
+            
             MaintenceMonitor.MaintenanceEvent += HandleMaintenceOrder;
             this.PublishTopic = publishTopic;
             this.ClinetID = clinetID;
@@ -80,6 +84,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             mqttclient.MessageReceived += OnMessage;
 
             await mqttclient.SubscribeAsync(topic);
+            
         }
 
         private async Task HandleNotify_accepted(dynamic message)
@@ -158,11 +163,13 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                     int count = myMaintenceCounter[e.Maintenancetype];
                     int updatedCount = count + 1;
                     myMaintenceCounter[e.Maintenancetype] = updatedCount;
-
+                    InteractionDataStorage.SaveMaintenanceCounter(myMaintenceCounter);
                 }
                 else if (!myMaintenceCounter.ContainsKey(e.Maintenancetype)) {
-                    myMaintenceCounter.Add(e.Maintenancetype, 1000);
+                    myMaintenceCounter.Add(e.Maintenancetype, 1);
+                    InteractionDataStorage.SaveMaintenanceCounter(myMaintenceCounter);
                 };
+                
                 I40Message message = new I40Message();
                 var interactionElement =await RetreiveInteractionElement.GetInteractionElement(url, e.Maintenancetype);
                 message.interactionElements = interactionElement;
@@ -185,8 +192,6 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 Console.WriteLine("Unable to retrieve value");
             }
         }
-
-        
 
         [Obsolete]
         private async void OnMessage(object sender, MqttApplicationMessageReceivedEventArgs e)
