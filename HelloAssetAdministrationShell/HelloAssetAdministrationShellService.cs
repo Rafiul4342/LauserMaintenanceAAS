@@ -40,20 +40,7 @@ namespace HelloAssetAdministrationShell
 
         public HelloAssetAdministrationShellService()
         {
-            /* helloSubmodelServiceProvider = new SubmodelServiceProvider();
-                        helloSubmodelServiceProvider.BindTo(AssetAdministrationShell.Submodels["HelloSubmodel"]);
-                        helloSubmodelServiceProvider.RegisterMethodCalledHandler("HelloOperation", HelloOperationHandler);
-                        helloSubmodelServiceProvider.RegisterSubmodelElementHandler("HelloProperty",
-                            new SubmodelElementHandler(HelloSubmodelElementGetHandler, HelloSubmodelElementSetHandler));
-                        this.RegisterSubmodelServiceProvider("HelloSubmodel", helloSubmodelServiceProvider);
-
-                        operationalDataSubmodelServiceProvider = new SubmodelServiceProvider();
-                        operationalDataSubmodelServiceProvider.BindTo(AssetAdministrationShell.Submodels["OperationalDataSubmodel"]);
-                        operationalDataSubmodelServiceProvider.RegisterMethodCalledHandler("OperationalData", OperationalDataOperationHandler);
-                        operationalDataSubmodelServiceProvider.RegisterSubmodelElementHandler("OperationalDataProperty",
-                            new SubmodelElementHandler(OperationalDataSubmodelElementGetHandler, OperationalDataSubmodelElementSetHandler));
-                        this.RegisterSubmodelServiceProvider("OperationalDataSubmodel", operationalDataSubmodelServiceProvider);
-            */
+           
 
             maintenanceSubmodelServiceProvider = new SubmodelServiceProvider();
             maintenanceSubmodelServiceProvider.BindTo(AssetAdministrationShell.Submodels["MaintenanceSubmodel"]);
@@ -62,10 +49,6 @@ namespace HelloAssetAdministrationShell
                 new SubmodelElementHandler(MaintenanceSubmodelElementGetHandler, MaintenanceSubmodelElementSetHandler));
             this.RegisterSubmodelServiceProvider("MaintenanceSubmodel", maintenanceSubmodelServiceProvider);
 
-            /* assetIdentificationSubmodelProvider = new SubmodelServiceProvider();
-             assetIdentificationSubmodelProvider.BindTo(AssetAdministrationShell.Submodels["AssetIdentification"]);
-             assetIdentificationSubmodelProvider.UseInMemorySubmodelElementHandler();
-             this.RegisterSubmodelServiceProvider("AssetIdentification", assetIdentificationSubmodelProvider);*/
         }
 
         private void HelloSubmodelElementSetHandler(ISubmodelElement submodelElement, IValue value)

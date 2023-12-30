@@ -33,10 +33,10 @@ namespace HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper
             .Build();
 
             _mqttClient = new MqttFactory().CreateMqttClient();
-            _mqttClient.ApplicationMessageReceivedAsync += HandleReceivedMessages;
+           
             ConnectAsync(_options).Wait();
             
-
+            _mqttClient.ApplicationMessageReceivedAsync += HandleReceivedMessages;
         }
 
         private async Task ConnectAsync(MqttClientOptions _options)
@@ -52,11 +52,10 @@ namespace HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper
             }
         }
 
-        public async Task SubscribeAsync(string topic)
+        public void SubscribeAsync(string topic)
         {  
             
-                await _mqttClient.SubscribeAsync(topic);
-       
+               _mqttClient.SubscribeAsync(topic);
         }
 
         [Obsolete]
@@ -76,21 +75,51 @@ namespace HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper
         }
         public async Task PublishAsync<I40Message>(string topic, I40Message payload)
         {
-            var jsonPayload = JsonConvert.SerializeObject(payload);
-            var message = new MqttApplicationMessageBuilder()
-                .WithTopic(topic)
-                .WithPayload(jsonPayload)
-                .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce)
-                .Build();
+            if (_mqttClient.IsConnected)
+            {
+                var jsonPayload = JsonConvert.SerializeObject(payload);
+                var message = new MqttApplicationMessageBuilder()
+                    .WithTopic(topic)
+                    .WithPayload(jsonPayload)
+                    .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce)
+                    .Build();
 
-            await _mqttClient.PublishAsync(message);
-            Console.WriteLine(message);
-            Console.WriteLine("MaintenanceCycleCompleted");
+                await _mqttClient.PublishAsync(message);
+                Console.WriteLine(message);
+                Console.WriteLine("MaintenanceCycleCompleted");
+            }
+            else
+            {
+                Console.WriteLine("MQTT client is not connected. Attempting to connect and publish...");
+
+                // Assuming _options is already initialized in your class
+                if (_options != null)
+                {
+                    await ConnectAndPublishAsync(_options, topic, payload);
+                }
+                else
+                {
+                    Console.WriteLine("MQTT options are not initialized.");
+                }
+            }
+            
 
         }
         public List<string> getMessages()
         {
             return mymesseges;
+        }
+        private async Task ConnectAndPublishAsync<M>(MqttClientOptions options, string topic, M payload)
+        {
+            try
+            {
+                await _mqttClient.ConnectAsync(options);
+                await PublishAsync(topic, payload); // Recursive call to PublishAsync after connecting
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error connecting to MQTT broker: {ex.Message}");
+            }
         }
        
     }

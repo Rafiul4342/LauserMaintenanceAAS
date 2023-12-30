@@ -79,11 +79,11 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             this.brokeraddress = BrokerAddress;
             this.brokerport = port;
             this.url = AASurl;
-            this.mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org", 1883, ClinetID, topic);
+            this.mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound(BrokerAddress, 1883, ClinetID, topic);
             this.actions = new MaintenaceActions(url);
             mqttclient.MessageReceived += OnMessage;
 
-            await mqttclient.SubscribeAsync(topic);
+            mqttclient.SubscribeAsync(topic);
             
         }
 
@@ -181,15 +181,14 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 var result = mqttclient.PublishAsync(PublishTopic, message);
 
                actions.UpdateMaintenanceOrderStatus(e.Maintenancetype, "OrderSubmitted");
-                
+               string message1 = JsonConvert.SerializeObject(message);
+               Console.WriteLine(message1);
                 await RetryPolicy(message, ConversationID,PublishTopic);
-                string message1 = JsonConvert.SerializeObject(message);
-                Console.WriteLine(message1);  
-                
+
             }
-            catch
+            catch(Exception ex)
             {
-                Console.WriteLine("Unable to retrieve value");
+                Console.WriteLine(ex);
             }
         }
 

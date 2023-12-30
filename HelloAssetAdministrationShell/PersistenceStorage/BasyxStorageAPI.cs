@@ -165,9 +165,7 @@ namespace HelloAssetAdministrationShell.PersistenceStorage
 
         }
 
-
-
-
+        
         public bool Delete(string key)
         {
             var filter = Builders<T>.Filter.Eq("Identification.Id", key);

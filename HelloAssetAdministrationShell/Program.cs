@@ -85,6 +85,7 @@ namespace HelloAssetAdministrationShell
 
             //Assign Asset Administration Shell Service to the generic HTTP-REST interface
             server.SetServiceProvider(shellService);
+          
 
             
             

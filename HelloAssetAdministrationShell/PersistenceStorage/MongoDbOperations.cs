@@ -18,7 +18,8 @@ namespace HelloAssetAdministrationShell.PersistenceStorage
         
         private readonly BasyxStorageAPI<AssetAdministrationShell> _aasStorageApi;
         private readonly BasyxStorageAPI<Submodel> _submodelStorageApi;
-        private readonly IAssetAdministrationShellServiceProvider _serviceProvider;
+        
+        
        
         public MongoDbOperations(
             BasyxStorageAPI<AssetAdministrationShell> aasStorageApi,
@@ -27,12 +28,11 @@ namespace HelloAssetAdministrationShell.PersistenceStorage
 
             _aasStorageApi = aasStorageApi;
             _submodelStorageApi = submodelStorageApi;
-            _serviceProvider = assetAdministrationShellServiceProvider;
-
+          
         }
+
         
-        
-        
+
     }
 
 }

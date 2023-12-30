@@ -8,8 +8,8 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager.I40Communic
 {
     public static class InteractionDataStorage
     {
-        private const string MaintenanceCounterFilePath = "NorthBoundInteractionManager/I40CommunicationPersitance/maintenanceCounter.json";
-        private const string ConversationTrackerFilePath = "NorthBoundInteractionManager/I40CommunicationPersitance/conversationTracker.json";
+        private const string MaintenanceCounterFilePath = "maintenanceCounter.json";
+        private const string ConversationTrackerFilePath = "conversationTracker.json";
 
         public static void SaveMaintenanceCounter(Dictionary<string, int> maintenanceCounter)
         {
