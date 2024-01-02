@@ -114,10 +114,10 @@ namespace HelloAssetAdministrationShell
             };
             
             Console.WriteLine(mqttSouthBoundConfig.BrokerAddress);
-            MqttClientFunction cl = new MqttClientFunction(mqttSouthBoundConfig.BrokerAddress,mqttSouthBoundConfig.Port,mqttSouthBoundConfig.SubscriptionTopic);
+          
             SendMaintenanceOrders order = new SendMaintenanceOrders();
             order.SendMaintenanceOrders1(ClinetID, mqttNorthBoundConfig.BrokerAddress,mqttNorthBoundConfig.Port,url,mqttNorthBoundConfig.SubscriptionTopic,mqttNorthBoundConfig.PublicationTopic);
-
+            MqttClientFunction cl = new MqttClientFunction(mqttSouthBoundConfig.BrokerAddress,mqttSouthBoundConfig.Port,mqttSouthBoundConfig.SubscriptionTopic);
             //  HelloAssetAdministrationShell.I40MessageExtension.MqttWrapper.MqttNorthbound mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound("test.mosquitto.org", 1883, ClinetID);
 
 

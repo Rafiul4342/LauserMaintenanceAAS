@@ -79,7 +79,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             this.brokeraddress = BrokerAddress;
             this.brokerport = port;
             this.url = AASurl;
-            this.mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound(BrokerAddress, 1883, ClinetID, topic);
+            this.mqttclient = new I40MessageExtension.MqttWrapper.MqttNorthbound(BrokerAddress, port, ClinetID, topic);
             this.actions = new MaintenaceActions(url);
             mqttclient.MessageReceived += OnMessage;
 
@@ -93,6 +93,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             
             var ConversationID = data.frame.conversationId.ToString();
             ConversationTracker[ConversationID].OrderStatus = "OrderRequestOnProcess";
+            InteractionDataStorage.SaveConversationTracker(ConversationTracker);
             actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderRequestOnProcess");
             actions.UpdateMaintenceRecord(data);
             try
@@ -136,6 +137,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
             actions.UpdateMaintenanceOrderStatus(ConversationTracker[ConversationID].MaintenanceType, "OrderCompleted");
             ConversationTracker[ConversationID].EndTime = DateTime.Now;
             ConversationTracker[ConversationID].OrderStatus = "OrderCompleted";
+            InteractionDataStorage.SaveConversationTracker(ConversationTracker);
             
             var res =actions.UpdateMaintenanceHistoryCount(ConversationTracker[ConversationID].MaintenanceType);
             if (res == true)
@@ -165,31 +167,44 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                     myMaintenceCounter[e.Maintenancetype] = updatedCount;
                     InteractionDataStorage.SaveMaintenanceCounter(myMaintenceCounter);
                 }
-                else if (!myMaintenceCounter.ContainsKey(e.Maintenancetype)) {
+                else if (!myMaintenceCounter.ContainsKey(e.Maintenancetype))
+                {
                     myMaintenceCounter.Add(e.Maintenancetype, 1);
                     InteractionDataStorage.SaveMaintenanceCounter(myMaintenceCounter);
-                };
-                
-                I40Message message = new I40Message();
-                var interactionElement =await RetreiveInteractionElement.GetInteractionElement(url, e.Maintenancetype);
-                message.interactionElements = interactionElement;
-                string ConversationID = "DMU80"+ e.Maintenancetype +"::"+ myMaintenceCounter[e.Maintenancetype].ToString(); 
-                Console.WriteLine(ConversationID);
-                var frame = CreateFrame.GetFrame(ConversationID, 1, "NOTIFY_INIT", senderAAS);
-                message.Setframe(frame);
-                ConversationTracker.Add(ConversationID, value: new ConversationInfo { MaintenanceType = e.Maintenancetype, ID= senderAAS, OrderStatus = "OrderSubmitted", StartTime = DateTime.Now });
-                var result = mqttclient.PublishAsync(PublishTopic, message);
+                }
 
-               actions.UpdateMaintenanceOrderStatus(e.Maintenancetype, "OrderSubmitted");
-               string message1 = JsonConvert.SerializeObject(message);
-               Console.WriteLine(message1);
-                await RetryPolicy(message, ConversationID,PublishTopic);
 
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
+            try
+            {
+                I40Message message = new I40Message();
+                var interactionElement =await RetreiveInteractionElement.GetInteractionElement(url, e.Maintenancetype);
+                message.interactionElements = interactionElement;
+                var count = InteractionDataStorage.LoadMaintenanceCounter();
+                var acc =count[e.Maintenancetype];
+                string ConversationID = "DMU80"+ e.Maintenancetype +"::"+ acc.ToString(); 
+                Console.WriteLine(ConversationID);
+                var frame = CreateFrame.GetFrame(ConversationID, 1, "NOTIFY_INIT", senderAAS);
+                message.Setframe(frame);
+                ConversationTracker.Add(ConversationID, value: new ConversationInfo { MaintenanceType = e.Maintenancetype, ID= senderAAS, OrderStatus = "OrderSubmitted", StartTime = DateTime.Now });
+                InteractionDataStorage.SaveConversationTracker(ConversationTracker);
+                var result = mqttclient.PublishAsync(PublishTopic, message);
+
+                actions.UpdateMaintenanceOrderStatus(e.Maintenancetype, "OrderSubmitted");
+                string message1 = JsonConvert.SerializeObject(message);
+                Console.WriteLine(message1);
+                await RetryPolicy(message, ConversationID,PublishTopic);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            
         }
 
         [Obsolete]
@@ -242,6 +257,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                var Receiver = datadeserialize.frame.receiver.identification.id;
                // Console.WriteLine(Receiver);
                 var MessageType = datadeserialize.frame.type;
+                
                 var ConversationID = datadeserialize.frame.conversationId.ToString();
                 Console.WriteLine(ConversationID);
                 // no need for this logic here 

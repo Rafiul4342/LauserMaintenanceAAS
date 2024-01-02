@@ -35,7 +35,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 Console.WriteLine(data.Entity.Value);
                 int actualtime = seconds.ConverCurrenthourstosecond((string)data.Entity.Value);
                 Console.WriteLine(actualtime);
-                if(!thresoldReached && actualtime >= thresold)
+                if(!thresoldReached && actualtime > thresold)
                 {
                     thresoldReached = true;
                     MaintenanceEvent?.Invoke(this, new MaintenanceEventArgs(MaintenceIntevals, thresold));

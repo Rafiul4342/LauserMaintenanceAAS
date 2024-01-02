@@ -50,11 +50,11 @@ namespace HelloAssetAdministrationShell.MqttConnection
             // create client instance 
             client = new MqttClient(brokerAddress, port, false, null, null, MqttSslProtocols.None);
             // register to message received 
-            client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
+           
             //client.Connect(Guid.NewGuid().ToString(), settings.UserName, settings.Password);
             string clientId = Guid.NewGuid().ToString();
             client.Connect(clientId);
-
+            client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
             // subscribe to the topic "MacnineData/ID-0000" with QoS 2 
             client.Subscribe(new string[] {topicSubscribe}, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
             
