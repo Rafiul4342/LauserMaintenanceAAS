@@ -17,7 +17,7 @@ services:
       - "5422:5422"
     environment:
       - ASPNETCORE_URLS=http://+:6999;https://+:6499;http://+:5999;https://+:5499;https://+:443;http://+:5111;https://+:5411
-      - MES_APPLICATION_CONFIG:BROKER_ADDRESS=test.mosquitto.org
+      - MES_APPLICATION_CONFIG:BROKER_ADDRESS=liabroker.ddns.net
       - MES_APPLICATION_CONFIG:BROKER_PORT=1883
       - MES_APPLICATION_CONFIG:SUBSCRIPTION_TOPIC=BasyxMesAASOrderHandling
       - MES_APPLICATION_CONFIG:PUBLICATION_TOPIC=aas-notification
@@ -29,12 +29,12 @@ services:
     stdin_open: true
 
   dmu80evo:
-    image: asset4342/dmu80evo:v13
+    image: asset4342/dmu80evo:v14
     environment:
-      - MQTTSOUTHBOUND_BROKERADDRESS=test.mosquitto.org
+      - MQTTSOUTHBOUND_BROKERADDRESS=liabroker.ddns.net
       - MQTTSOUTHBOUND_PORT=1883
       - MQTTSOUTHBOUND_SUBSCRIPTIONTOPIC=DMU80eVo
-      - MQTTNORTHBOUND_BROKERADDRESS=test.mosquitto.org
+      - MQTTNORTHBOUND_BROKERADDRESS=liabroker.ddns.net
       - MQTTNORTHBOUND_PORT=1883
       - MQTTNORTHBOUND_SUBSCRIPTIONTOPIC=aas-notification
       - MQTTNORTHBOUND_PUBLICATIONTOPIC=BasyxMesAASOrderHandling
