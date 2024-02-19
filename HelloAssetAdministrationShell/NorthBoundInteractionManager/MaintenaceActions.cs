@@ -46,7 +46,21 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
            }
        }
 
-        public void UpdateMaintenanceOrderStatus(string MaintenaceType, string OrderStatus)
+       public string GetSenderID()
+       {
+           var res = _client.RetrieveAssetAdministrationShell();
+           return  res.Entity.Identification.Id.ToString();
+       }
+
+       public string GetMachineID()
+       {
+           var data = _client.RetrieveSubmodelElementValue("MaintenanceSubmodel",
+               "Maintenance_1" + "/" + "MaintenanceOrderDescription" + "/" + "MaintenanceElement");
+           return data.Entity.Value.ToString();
+       }                 
+       
+       
+       public void UpdateMaintenanceOrderStatus(string MaintenaceType, string OrderStatus)
         {
             IValue updatedValue = new ElementValue(OrderStatus);
 

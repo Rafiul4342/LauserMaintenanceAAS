@@ -2,22 +2,23 @@
 
 services:
   mes_app:
-    image: asset4342/mesaas:v3
+    image: asset4342/mesaas:v4
     container_name: mes_app
+    restart: always
     ports:
       - "6499:6499"
-      - "6999:6999"
+      - "6998:6999"
       - "5499:5499"
       - "4999:4999"
       - "5999:5999"
       - "5411:5411"
       - "446:443"
-      - "5111:5111"
+      - "5112:5111"
       - "5222:5222"
       - "5422:5422"
     environment:
       - ASPNETCORE_URLS=http://+:6999;https://+:6499;http://+:5999;https://+:5499;https://+:443;http://+:5111;https://+:5411
-      - MES_APPLICATION_CONFIG:BROKER_ADDRESS=liabroker.ddns.net
+      - MES_APPLICATION_CONFIG:BROKER_ADDRESS=test.mosquitto.org
       - MES_APPLICATION_CONFIG:BROKER_PORT=1883
       - MES_APPLICATION_CONFIG:SUBSCRIPTION_TOPIC=BasyxMesAASOrderHandling
       - MES_APPLICATION_CONFIG:PUBLICATION_TOPIC=aas-notification
@@ -29,12 +30,13 @@ services:
     stdin_open: true
 
   dmu80evo:
-    image: asset4342/dmu80evo:v14
+    image: asset4342/dmu80evofinal:v1
     environment:
-      - MQTTSOUTHBOUND_BROKERADDRESS=liabroker.ddns.net
+      - AASSERVERADDRESS=http://localhost:5180
+      - MQTTSOUTHBOUND_BROKERADDRESS=test.mosquitto.org
       - MQTTSOUTHBOUND_PORT=1883
       - MQTTSOUTHBOUND_SUBSCRIPTIONTOPIC=DMU80eVo
-      - MQTTNORTHBOUND_BROKERADDRESS=liabroker.ddns.net
+      - MQTTNORTHBOUND_BROKERADDRESS=test.mosquitto.org
       - MQTTNORTHBOUND_PORT=1883
       - MQTTNORTHBOUND_SUBSCRIPTIONTOPIC=aas-notification
       - MQTTNORTHBOUND_PUBLICATIONTOPIC=BasyxMesAASOrderHandling
@@ -44,19 +46,108 @@ services:
       - "5180:5180"
     networks:
       - myapp_network
-
+    
+  dmu80evo-2:
+    image: asset4342/dmu80evo-2final:v1
+    environment:
+      - AASSERVERADDRESS=http://localhost:5181
+      - MQTTSOUTHBOUND_BROKERADDRESS=test.mosquitto.org
+      - MQTTSOUTHBOUND_PORT=1883
+      - MQTTSOUTHBOUND_SUBSCRIPTIONTOPIC=DMU80eVo-2
+      - MQTTNORTHBOUND_BROKERADDRESS=test.mosquitto.org
+      - MQTTNORTHBOUND_PORT=1883
+      - MQTTNORTHBOUND_SUBSCRIPTIONTOPIC=aas-notification
+      - MQTTNORTHBOUND_PUBLICATIONTOPIC=BasyxMesAASOrderHandling
+    ports:
+      - "5003:5002"
+      - "5004:5001"
+      - "5181:5181"
+    networks:
+      - myapp_network
+      
+  dmu80evo-3:
+    image: asset4342/dmu80evo-3final:v1
+    environment:
+      - AASSERVERADDRESS=http://localhost:5182
+      - MQTTSOUTHBOUND_BROKERADDRESS=test.mosquitto.org
+      - MQTTSOUTHBOUND_PORT=1883
+      - MQTTSOUTHBOUND_SUBSCRIPTIONTOPIC=DMU80eVo-2
+      - MQTTNORTHBOUND_BROKERADDRESS=test.mosquitto.org
+      - MQTTNORTHBOUND_PORT=1883
+      - MQTTNORTHBOUND_SUBSCRIPTIONTOPIC=aas-notification
+      - MQTTNORTHBOUND_PUBLICATIONTOPIC=BasyxMesAASOrderHandling
+    ports:
+      - "5005:5002"
+      - "5006:5001"
+      - "5182:5182"
+    networks:
+      - myapp_network
+  
   ui:
     image: ajaykumarnadoda/cncmachineaasdashboardserver
     ports:
       - "8000:80"
     environment:
-      - AASServer_Address=http://192.168.0.105:5180
+      - AASServer_Address=http://172.27.64.1:5180
     container_name: ui
     networks:
       - myapp_network
     depends_on:
       - dmu80evo
-
+  
+  ui1:
+    image: ajaykumarnadoda/cncmachineaasdashboardserver
+    ports:
+      - "8001:80"
+    environment:
+      - AASServer_Address=http://172.27.64.1:5181
+    container_name: ui1
+    networks:
+      - myapp_network
+    depends_on:
+      - dmu80evo-2
+  
+  ui2:
+    image: ajaykumarnadoda/cncmachineaasdashboardserver
+    ports:
+      - "8002:80"
+    environment:
+      - AASServer_Address=http://172.27.64.1:5182
+    container_name: ui2
+    networks:
+      - myapp_network
+    depends_on:
+      - dmu80evo-3
+  
+  web:
+    image: shaifulali/aas_persistence:win
+    restart: always
+    depends_on:
+      - mes_app
+      - mongo
+    ports:
+      - "8003:8000"
+    environment:
+      SECRET_KEY: "wuiyeriuweyruiyweiuryiuewyriuewyriuyewiukjsdhbfkljhsdkjhf-test"
+      DJANGO_ALLOWED_HOSTS: "*"
+      DJANGO_DEBUG: 'True'
+      MONGO_URL: mongodb://mongo:27017
+      AAS_URL: "http://mes_app:5111/aas"
+      SUBMODELS_URL: "http://mes_app:5111/aas/submodels"
+      DATA_UPDATE_INTERVAL: 10
+    stdin_open: true
+    networks:
+      - myapp_network
+    tty: true
+    
+  mongo:
+    image: mongo
+    container_name: mymongo
+    volumes:
+      - ./mongo_data:/data/db    
+    networks:
+      - myapp_network
 networks:
   myapp_network:
     driver: bridge
+

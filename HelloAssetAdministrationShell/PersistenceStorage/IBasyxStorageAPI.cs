@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using MongoDB.Driver;
 
 namespace HelloAssetAdministrationShell.PersistenceStorage
 {
@@ -10,24 +12,15 @@ namespace HelloAssetAdministrationShell.PersistenceStorage
     /// <returns></returns>
     
     
-    public interface IBasyxStorageAPI<T>
+    public interface IBasyxStorageAPI<T> where T : class
     {
-       // Creates or updates an object 
-          
-        public T CreatOrUpdate(T obj);
-       // updates a particular object 
-       
-        public T Update(T obj, string key);
-        
-        public T Retrieve(string key);
-
-        public IEnumerable<T> RetrieveAll();
-
-        public bool Delete(string key);
-        
-        public void CreateCollectionIfNotExists(string collectionName);
-
-        public void DeleteCollection();
-        
+        Task<T> RetrieveAsync(string key);
+        Task<IEnumerable<T>> RetrieveAllAsync();
+        Task<T> UpdateAsync(T obj, string key);
+        Task<T> CreatOrUpdateAsync(T obj);
+        Task<bool> DeleteAsync(string key);
+        Task CreateCollectionIfNotExistsAsync(string collectionName);
+        Task DeleteCollectionAsync();
     }
+    
 }

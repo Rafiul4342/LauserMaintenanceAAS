@@ -23,6 +23,7 @@ using HelloAssetAdministrationShell.MqttConnection;
 using Makaretu.Dns;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tmds.Linux;
@@ -111,6 +112,7 @@ namespace HelloAssetAdministrationShell
             var localProperty = AssetAdministrationShell.Submodels["MaintenanceSubmodel"].SubmodelElements["OperationalDataProperty"].Cast<IProperty>();
             return new ElementValue(localProperty.Value, localProperty.ValueType);
         }
+        
 
         public override IAssetAdministrationShell BuildAssetAdministrationShell()
         {
@@ -488,9 +490,13 @@ namespace HelloAssetAdministrationShell
                         (aas.Asset as Asset).AssetIdentificationModel = new Reference<ISubmodel>(assetIdentificationSubmodel);
 
                         aas.Submodels.Add(assetIdentificationSubmodel);*/
-            
+
+         
             aas.Submodels.Add(maintenanceSubmodel);
+          
             return aas;
         }
+
+       
     }
 }

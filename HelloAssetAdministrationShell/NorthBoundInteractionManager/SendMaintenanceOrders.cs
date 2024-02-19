@@ -28,7 +28,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
 
         public static string ConvessationID;
 
-        public static string senderAAS = "BASYX_MACHINE_AAS_1"+Guid.NewGuid().ToString();
+        public string senderAAS;
 
         public static Dictionary<string, int> myMaintenceCounter;
         
@@ -102,6 +102,7 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 I40Message mes = new I40Message();
                 var Ie = actions.GetUpDatedRecord(ConversationTracker[ConversationID].MaintenanceType.ToString());
                 mes.interactionElements = Ie;
+                
                 var frame = CreateFrame.GetFrame(ConversationID, 3, "RESPOND",senderAAS);
                 mes.SetInteractionElement(Ie);
                 mes.Setframe(frame);
@@ -187,8 +188,10 @@ namespace HelloAssetAdministrationShell.NorthBoundInteractionManager
                 message.interactionElements = interactionElement;
                 var count = InteractionDataStorage.LoadMaintenanceCounter();
                 var acc =count[e.Maintenancetype];
-                string ConversationID = "DMU80"+ e.Maintenancetype +"::"+ acc.ToString(); 
+                
+                string ConversationID = actions.GetMachineID()+ e.Maintenancetype +"::"+ acc.ToString(); 
                 Console.WriteLine(ConversationID);
+                this.senderAAS = actions.GetSenderID();
                 var frame = CreateFrame.GetFrame(ConversationID, 1, "NOTIFY_INIT", senderAAS);
                 message.Setframe(frame);
                 ConversationTracker.Add(ConversationID, value: new ConversationInfo { MaintenanceType = e.Maintenancetype, ID= senderAAS, OrderStatus = "OrderSubmitted", StartTime = DateTime.Now });

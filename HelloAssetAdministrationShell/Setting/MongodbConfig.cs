@@ -1,6 +1,6 @@
 ﻿namespace HelloAssetAdministrationShell.Setting
 {
-    public class MongoBDSettings
+    public class MongodbConfig
     {
         public string DatabaseName { get; set; }
         public string ConnectionString { get; set; }
